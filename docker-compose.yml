@@ -1,0 +1,27 @@
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: vayudhrishti_db
+      POSTGRES_USER: skyguard_admin
+      POSTGRES_PASSWORD: supersecretpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
