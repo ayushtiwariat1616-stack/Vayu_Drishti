@@ -65,9 +65,36 @@ function AppShell() {
 }
 
 export default function App() {
+  // 1. FORGE THE WEAPON FIRST (Declare State)
+  const [stations, setStations] = useState([]);
+
+  // 2. FIRE THE WEAPON (Execute Effect)
+  useEffect(() => {
+    fetch('http://localhost:8000/api/v1/stations/', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token 869079abe659933cbed61cbfcf4dd4de75de49ed',
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network shield repelled the attack!');
+        }
+        return response.json(); 
+      })
+      .then(data => {
+        console.log("Radar Data Received:", data); 
+        setStations(data); 
+      })
+      .catch(error => console.error("Strike Failed:", error));
+  }, []); 
+
+  // 3. RENDER THE BATTLEFIELD
   return (
     <BrowserRouter>
-      <AppProvider>
+      {/* WARNING: You need to pass 'stations' into this AppProvider if your pages actually need it! */}
+      <AppProvider stations={stations}>
         <AppShell />
       </AppProvider>
     </BrowserRouter>
