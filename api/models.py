@@ -26,7 +26,7 @@ class Telemetry(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Station {self.station.id} - Temp: {self.temperature} at {self.timestamp}"
+        return f"Station {self.station.station_id} - Temp: {self.temperature} at {self.timestamp}"
     
 class SensorReading(models.Model):
     reading_id = models.CharField(max_length=50, primary_key=True)
@@ -40,3 +40,13 @@ class SensorReading(models.Model):
 
     def __str__(self):
         return f"{self.station_id} - {self.timestamp}"
+    
+class AnomalyEvent(models.Model):
+    station = models.ForeignKey(Station, on_delete=models.CASCADE, related_name='anomalies')
+    reading = models.ForeignKey(Telemetry, on_delete=models.CASCADE)
+    description = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_resolved = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"🚨 ANOMALY at {self.station.station_id}: {self.description}"
