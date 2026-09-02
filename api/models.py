@@ -13,6 +13,21 @@ class Station(models.Model):
     def __str__(self):
         return self.station_id
     
+class Telemetry(models.Model):
+    # The Link: Which station sent this data?
+    station = models.ForeignKey(Station, on_delete=models.CASCADE, related_name='telemetry_data')
+    
+    # The Payload: The actual sensor readings (FloatField allows decimals!)
+    temperature = models.FloatField()
+    humidity = models.FloatField()
+    pressure = models.FloatField()
+    
+    # The Timestamp: When did the attack happen? Auto-records the exact millisecond!
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Station {self.station.id} - Temp: {self.temperature} at {self.timestamp}"
+    
 class SensorReading(models.Model):
     reading_id = models.CharField(max_length=50, primary_key=True)
     station = models.ForeignKey(Station, on_delete=models.CASCADE)

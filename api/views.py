@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from rest_framework import viewsets,permissions
-from .serializers import SensorReadingSerializer,StationSerializer
-from .models import SensorReading,Station
+from rest_framework import viewsets,permissions,generics
+from .serializers import SensorReadingSerializer,StationSerializer,TelemetrySerializer
+from .models import SensorReading,Station,Telemetry
 # Create your views here.
 
 class SensorReadingViewSet(viewsets.ModelViewSet):
@@ -22,4 +22,9 @@ class StationViewSet(viewsets.ModelViewSet):
     
     queryset = Station.objects.all()
     serializer_class = StationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+class TelementryViewSet(generics.CreateAPIView):
+    queryset = Telemetry.objects.all()
+    serializer_class = TelemetrySerializer
     permission_classes = [permissions.IsAuthenticated]

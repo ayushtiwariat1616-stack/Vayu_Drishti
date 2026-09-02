@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Station,SensorReading
+from .models import Station,SensorReading,Telemetry
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,4 +9,10 @@ class StationSerializer(serializers.ModelSerializer):
 class SensorReadingSerializer(serializers.ModelSerializer):
     class Meta:
         model = SensorReading
+        fields = '__all__'
+        
+class TelemetrySerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Telemetry
         fields = '__all__'
