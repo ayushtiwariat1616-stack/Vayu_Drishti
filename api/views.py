@@ -3,6 +3,8 @@ from rest_framework import viewsets,permissions,generics
 from .serializers import SensorReadingSerializer,StationSerializer,TelemetrySerializer
 from .models import SensorReading,Station,Telemetry,AnomalyEvent
 from .predict import detect_anomaly
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 # Create your views here.
 
 class SensorReadingViewSet(viewsets.ModelViewSet):
@@ -47,4 +49,14 @@ class TelementryViewSet(generics.CreateAPIView):
                 station=telemetry_instance.station,
                 reading=telemetry_instance,
                 description=f"Critical Threshold Exceeded! Temp: {telemetry_instance.temperature}C"
+            )
+            
+            # FIRE THE WEBSOCKET TURRET!
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                'telemetry_alerts', # This MUST match the group_name in your consumers.py!
+                {
+                    'type': 'send_alert', # This MUST match the method name in your consumers.py!
+                    'message': f"🚨 URGENT: Station {telemetry_instance.station.station_id} is overheating at {telemetry_instance.temperature}°C!"
+                }
             )
