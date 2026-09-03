@@ -31,11 +31,13 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'channels',
     'django.contrib.staticfiles',
     'api',
     'rest_framework',
@@ -71,8 +73,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'vayudhrishti.wsgi.application'
-
+# WSGI_APPLICATION = 'vayudhrishti.wsgi.application'
+ASGI_APPLICATION = 'vayudhrishti.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
@@ -145,4 +147,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
+}
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
 }

@@ -5,6 +5,7 @@ import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
 import LiveEventStream from "../../components/system/LiveEventStream";
 import { formatRelative } from '../../utils/formatters';
 import { useNavigate } from 'react-router-dom';
+import TelemetryRadar from '../../components/ui/TelemetryRadar'; // Adjust path if necessary
 
 // Animated number component
 function AnimatedNumber({ value, decimals = 1, className = '' }) {
@@ -319,9 +320,15 @@ export default function CommandCenter() {
           </div>
         </div>
 
-        {/* Live events */}
-        <div className="col-span-2">
-          <LiveEventStream events={events} maxItems={10} className="h-full" />
+        {/* Live Events & Threat Radar */}
+        <div className="col-span-2 flex flex-col gap-4">
+          {/* Your Custom WebSocket Weapon */}
+          <TelemetryRadar />
+          
+          {/* The Existing Event Stream */}
+          <div className="flex-1 min-h-[400px]">
+            <LiveEventStream events={events} maxItems={10} className="h-full" />
+          </div>
         </div>
       </div>
     </div>
