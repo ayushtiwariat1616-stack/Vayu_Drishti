@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-*8_66@lhtrwchs5yu_-^z#&7*no5w5v8t-c8i4cron3f*ayi2#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
+
+# Allow everywhere for now (we will lock this down to your Vercel URL later)
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Application definition
@@ -47,6 +52,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -80,14 +86,11 @@ ASGI_APPLICATION = 'vayudhrishti.asgi.application'
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vayudhrishti_db',
-        'USER': 'skyguard_admin',
-        'PASSWORD': 'supersecretpassword',
-        'HOST': 'db', # This connects directly to the service name in docker-compose!
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('postgresql://skyguard_admin:a21iBkuXc0eKk8RKsQPdFiTTteVuW7Sn@dpg-dad5ghqfngtc73fu4ta0-a.virginia-postgres.render.com/vayudhrishti_db', 'sqlite:///db.sqlite3'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 
@@ -126,6 +129,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 # Email
@@ -153,3 +157,6 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
+CSRF_TRUSTED_ORIGINS = [
+    'https://vayu-drishti-h8xr.onrender.com',
+]
