@@ -7,7 +7,7 @@ const TelemetryRadar = () => {
 
   useEffect(() => {
     // 1. Forge the WebSocket connection to your Django ASGI Elite
-    const ws = new WebSocket('ws://localhost:8000/ws/telemetry/');
+    const ws = new WebSocket('wss://vayu-drishti-h8xr.onrender.com/ws/telemetry/');
 
     // 2. The Handshake
     ws.onopen = () => {

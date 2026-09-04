@@ -145,6 +145,7 @@ MAILERS = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://vayu-drishti-h8xr.onrender.com",
 ]
 
 REST_FRAMEWORK = {
