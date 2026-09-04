@@ -14,11 +14,13 @@ from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 import api.routing
 
+from api.middleware import TokenAuthMiddleware
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vayudhrishti.settings')
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
+    "websocket": TokenAuthMiddleware(
         URLRouter(
             api.routing.websocket_urlpatterns
         )

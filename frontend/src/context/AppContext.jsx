@@ -194,7 +194,7 @@ export function AppProvider({ children }) {
     // Polling fallback — fetch latest readings every 10s
     pollingTimer.current = setInterval(async () => {
       try {
-        const data = await apiClient.get('/api/readings/latest');
+        const data = await apiClient.get('/sensors');
         if (data) dispatch({ type: 'NEW_READING', payload: data });
       } catch { /* silent */ }
     }, 10000);

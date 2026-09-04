@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import {WS_URL} from '../../api/client';
 const TelemetryRadar = () => {
   // State to hold our live threats and connection status
   const [alerts, setAlerts] = useState([]);
@@ -7,7 +7,7 @@ const TelemetryRadar = () => {
 
   useEffect(() => {
     // 1. Forge the WebSocket connection to your Django ASGI Elite
-    const ws = new WebSocket('wss://vayu-drishti-h8xr.onrender.com/ws/telemetry/');
+    const ws = new WebSocket(WS_URL);
 
     // 2. The Handshake
     ws.onopen = () => {
