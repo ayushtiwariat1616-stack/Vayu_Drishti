@@ -191,12 +191,15 @@ export function AppProvider({ children }) {
   }, []);
 
   const startPolling = useCallback(() => {
-    // Polling fallback — fetch latest readings every 10s
+    // Polling fallback — fetch latest readings every 10s as demanded by the SIH roadmap
     pollingTimer.current = setInterval(async () => {
       try {
-        const data = await apiClient.get('/sensors');
+        // Corrected the path from '/sensors' to the official roadmap endpoint
+        const data = await apiClient.get('/telemetry/latest/'); 
         if (data) dispatch({ type: 'NEW_READING', payload: data });
-      } catch { /* silent */ }
+      } catch (error) { 
+        console.warn("Polling strike failed:", error.message);
+      }
     }, 10000);
   }, []);
 

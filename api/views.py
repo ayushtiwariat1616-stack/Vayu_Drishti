@@ -5,6 +5,8 @@ from .models import SensorReading,Station,Telemetry,AnomalyEvent
 from .predict import detect_anomaly
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from rest_framework.decorators import action
+from rest_framework.response import Response
 # Create your views here.
 
 class SensorReadingViewSet(viewsets.ModelViewSet):
@@ -60,3 +62,17 @@ class TelementryViewSet(generics.CreateAPIView):
                     'message': f"🚨 URGENT: Station {telemetry_instance.station.station_id} is overheating at {telemetry_instance.temperature}°C!"
                 }
             )
+    @action(detail=False, methods=['get'])
+    def latest(self, request):
+        station_id = request.query_params.get('station')
+        if not station_id:
+            return Response({"error": "Station ID required"}, status=400)
+        
+        # Grab the single most recent reading for this station
+        latest_reading = self.queryset.filter(station_id=station_id).order_by('-timestamp').first()
+        
+        if not latest_reading:
+            return Response({"error": "No readings found"}, status=404)
+            
+        serializer = self.get_serializer(latest_reading)
+        return Response(serializer.data)

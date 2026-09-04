@@ -1,47 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import {WS_URL} from '../../api/client';
-const TelemetryRadar = () => {
-  // State to hold our live threats and connection status
-  const [alerts, setAlerts] = useState([]);
-  const [connectionStatus, setConnectionStatus] = useState('🔴 Disconnected');
+import React from 'react';
 
-  useEffect(() => {
-    // 1. Forge the WebSocket connection to your Django ASGI Elite
-    const ws = new WebSocket(WS_URL);
-
-    // 2. The Handshake
-    ws.onopen = () => {
-      setConnectionStatus('🟢 TARGET LOCKED: Connected to Django');
-    };
-
-    // 3. The Interceptor (Catching the JSON blast)
-    ws.onmessage = (event) => {
-      // Parse the JSON string coming from Python into a JavaScript object
-      const payload = JSON.parse(event.data);
-      
-      // Add the new alert to our state array without destroying the old ones
-      setAlerts((prevAlerts) => [...prevAlerts, payload.data]);
-    };
-
-    // 4. The Failsafes
-    ws.onerror = (error) => {
-      console.error("WebSocket Error: ", error);
-      setConnectionStatus('⚠️ ERROR: Signal blocked!');
-    };
-
-    ws.onclose = () => {
-      setConnectionStatus('🔴 CONNECTION LOST');
-    };
-
-    // 5. THE CLEANUP (CRITICAL FOR FAANG ELITES)
-    // If the component unmounts, sever the connection so it doesn't drain memory!
-    return () => {
-      ws.close();
-    };
-  }, []); // Empty dependency array means this runs ONCE when the component mounts.
-
+// 1. NEUTERED: No more internal state. No more WebSocket connections.
+// It now receives 'alerts' and 'connectionStatus' directly as props from the parent!
+const TelemetryRadar = ({ alerts = [], connectionStatus = '🔴 Disconnected' }) => {
+  
   return (
-    // Stripped minHeight: '100vh' and changed to a clean, adaptable container
     <div style={{ 
       padding: '15px', 
       backgroundColor: '#ffffff', 
@@ -57,7 +20,7 @@ const TelemetryRadar = () => {
       <p style={{ 
         margin: '0 0 15px 0', 
         fontSize: '0.9rem', 
-        color: connectionStatus.includes('LOCKED') ? '#38a169' : '#e53e3e',
+        color: connectionStatus.includes('LOCKED') || connectionStatus.includes('Connected') ? '#38a169' : '#e53e3e',
         fontWeight: 'bold'
       }}>
         {connectionStatus}
@@ -78,7 +41,7 @@ const TelemetryRadar = () => {
               fontSize: '0.95rem',
               fontWeight: '600'
             }}>
-              {alert}
+              {JSON.stringify(alert)}
             </div>
           ))
         )}
