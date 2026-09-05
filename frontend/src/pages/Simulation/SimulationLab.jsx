@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import { apiClient } from '../../api/client';
 import {
   Zap, Thermometer, Wifi, Droplets, Gauge, CheckCircle2,
   Radio, Server, Database, Cpu, MonitorSmartphone, ArrowDown,
@@ -138,14 +139,40 @@ export default function SimulationLab() {
 
     // Inject anomaly after pipeline
     let anomalyId = null;
-    if (scenario.key !== 'NORMAL') {
-      await new Promise(r => setTimeout(r, 300));
-      anomalyId = injectMockAnomaly(scenario.key);
+    let temperature = 25.0;
+    let humidity = 60.0;
+    let pressure = 1012.0;
+
+    if (scenario.key === 'TEMPERATURE_SPIKE') temperature = 250.0;
+    if (scenario.key === 'HUMIDITY_SPIKE') humidity = 105.0;
+    if (scenario.key === 'FROZEN_SENSOR') temperature = -50.0;
+    if (scenario.key === 'COMMUNICATION_FAILURE') pressure = 0.0;
+
+    try {
+      // POST real data to the backend ML pipeline!
+      await apiClient.post('/telemetry/', {
+        station: state.selectedStation || "Demo_Station_1",
+        temperature,
+        humidity,
+        pressure
+      });
+      
+      // Since it's a real WebSocket event, we'll wait a bit for it to arrive
+      if (scenario.key !== 'NORMAL') {
+        await new Promise(r => setTimeout(r, 600));
+        // Find the newest anomaly for this station as our result
+        const recentAnomaly = state.anomalies.find(a => a.stationId === state.selectedStation);
+        if (recentAnomaly) {
+          anomalyId = recentAnomaly.id;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to trigger ML pipeline:", e);
     }
 
     setResult({ scenario, anomalyId });
     setRunning(false);
-  }, [running, injectMockAnomaly]);
+  }, [running, state.selectedStation, state.anomalies]);
 
   const reset = () => {
     setPipelineStates({});

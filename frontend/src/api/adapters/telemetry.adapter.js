@@ -3,7 +3,7 @@ export const adaptTelemetry = (data) => {
 
   return {
     ...data, // Preserve other fields
-    stationId: data.station_id || data.stationId,
+    stationId: data.station || data.station_id || data.stationId,
     health: data.sensor_health || data.health,
     anomalyScore: data.anomaly_score !== undefined ? data.anomaly_score : data.anomalyScore,
   };
