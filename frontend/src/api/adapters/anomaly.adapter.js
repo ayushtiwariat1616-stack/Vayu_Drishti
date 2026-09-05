@@ -14,9 +14,11 @@ export const adaptAnomaly = (data) => {
     timestamp: data.timestamp,
     isResolved: data.is_resolved !== undefined ? data.is_resolved : data.isResolved,
     // Add default fallbacks for nested properties not currently present on backend model
-    detectionLayers: data.detectionLayers || {},
-    rootCauses: data.rootCauses || [],
-    affectedSensors: data.affectedSensors || [],
+    detectionLayers: data.detection_layers || data.detectionLayers || {},
+    rootCauses: data.root_causes || data.rootCauses || [],
+    affectedSensors: data.affected_sensors || data.affectedSensors || [],
+    rawReading: data.raw_reading || data.rawReading || null,
+    normalReading: data.normal_reading || data.normalReading || null,
     explanation: data.explanation || data.description,
   };
 };

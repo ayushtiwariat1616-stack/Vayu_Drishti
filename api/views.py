@@ -118,17 +118,8 @@ class TelemetryViewSet(viewsets.ModelViewSet):
                     )
                     
                     if channel_layer:
-                        anomaly_payload = {
-                            "id": anomaly.id,
-                            "stationId": telemetry_instance.station.station_id,
-                            "timestamp": str(anomaly.timestamp),
-                            "type": anomaly.anomaly_type,
-                            "severity": anomaly.severity,
-                            "score": anomaly.score,
-                            "confidence": anomaly.confidence,
-                            "status": anomaly.status,
-                            "description": anomaly.description,
-                        }
+                        from api.serializers import AnomalyEventSerializer
+                        anomaly_payload = AnomalyEventSerializer(anomaly).data
                         async_to_sync(channel_layer.group_send)(
                             'telemetry_alerts',
                             {
