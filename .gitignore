@@ -1,5 +1,28 @@
+# Python virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
 __pycache__/
-*.pyc
-.env
-desktop.ini
-*.sqlite3
+*.py[cod]
+
+# Raw and intermediate datasets
+data/raw/
+data/merged/
+
+# Large generated datasets
+data/cleaned/*.csv
+data/features/*.csv
+
+# Generated outputs
+outputs/*.csv
+outputs/*.txt
+
+# Trained model binaries
+models/*.pkl
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
