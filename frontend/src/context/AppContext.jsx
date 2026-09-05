@@ -245,6 +245,7 @@ export function AppProvider({ children }) {
           if (msg.type === 'reading' || msg.type === 'NEW_READING') {
             const adaptedReading = adaptTelemetry(msg.data);
             dispatch({ type: 'NEW_READING', payload: { stationId: adaptedReading.stationId, reading: adaptedReading } });
+            dispatch({ type: 'ADD_EVENT', payload: { id: `e${Date.now()}`, ts: new Date().toISOString(), type: 'reading', icon: '✓', text: 'Reading received', stationId: adaptedReading.stationId } });
           } else if (msg.type === 'anomaly') {
             const adaptedAnomaly = adaptAnomaly(msg.data);
             dispatch({ type: 'NEW_ANOMALY', payload: adaptedAnomaly });
