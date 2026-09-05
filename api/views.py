@@ -4,10 +4,20 @@ from rest_framework.response import Response
 from django.utils.dateparse import parse_datetime
 from .serializers import SensorReadingSerializer, StationSerializer, TelemetrySerializer, AnomalyEventSerializer
 from .models import SensorReading, Station, Telemetry, AnomalyEvent
-from .predict import detect_anomaly
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+import pandas as pd
+import json
+import sys
 
+# 1. Global ML Initialization
+print("Loading Vayudrishti Model 2 into memory...")
+try:
+    from RandomForest.src.live_inference import VayudrishtyLiveInference
+    ml_engine = VayudrishtyLiveInference()
+except Exception as e:
+    print(f"Warning: ML Engine failed to load ({e}).", file=sys.stderr)
+    ml_engine = None
 
 class SensorReadingViewSet(viewsets.ModelViewSet):
     """
@@ -64,52 +74,72 @@ class TelemetryViewSet(viewsets.ModelViewSet):
         # Save the incoming hardware data
         telemetry_instance = serializer.save()
 
-        # Feed the raw data to the ML Engine
-        prediction = detect_anomaly(
-            temperature=telemetry_instance.temperature,
-            humidity=telemetry_instance.humidity,
-            pressure=telemetry_instance.pressure
-        )
-
         channel_layer = get_channel_layer()
 
-        # 🛑 FIX: Check prediction["is_anomaly"], NOT the dict itself!
-        if prediction.get("is_anomaly"):
-            anomaly = AnomalyEvent.objects.create(
-                station=telemetry_instance.station,
-                reading=telemetry_instance,
-                anomaly_type=prediction.get("type", "UNKNOWN"),
-                severity=prediction.get("severity", "MEDIUM"),
-                score=prediction.get("score", 0.0),
-                confidence=prediction.get("confidence", 0.0),
-                description=prediction.get("explanation", f"Anomaly detected at {telemetry_instance.station.station_id}"),
-                status="active",
-            )
-
-            # Broadcast structured anomaly via WebSocket
-            if channel_layer:
-                anomaly_payload = {
-                    "id": anomaly.id,
-                    "stationId": telemetry_instance.station.station_id,
-                    "timestamp": str(anomaly.timestamp),
-                    "type": anomaly.anomaly_type,
-                    "severity": anomaly.severity,
-                    "score": anomaly.score,
-                    "confidence": anomaly.confidence,
-                    "status": anomaly.status,
-                    "description": anomaly.description,
-                    "detectionLayers": prediction.get("detection_layers", {}),
-                    "rootCauses": prediction.get("root_causes", []),
-                    "affectedSensors": prediction.get("affected_sensors", []),
-                    "explanation": prediction.get("explanation", ""),
-                }
-                async_to_sync(channel_layer.group_send)(
-                    'telemetry_alerts',
-                    {
-                        'type': 'send_anomaly',
-                        'message': anomaly_payload,
-                    }
-                )
+        if ml_engine:
+            try:
+                # 1. Fetch recent history buffer
+                recent_readings = Telemetry.objects.filter(
+                    station=telemetry_instance.station
+                ).order_by('-timestamp')[:50]
+                
+                # Format as DataFrame (Oldest first to newest)
+                data = []
+                for r in reversed(recent_readings):
+                    data.append({
+                        "station_id": r.station.station_id,
+                        "timestamp": r.timestamp,
+                        "temperature_C": r.temperature,
+                        "relative_humidity_pct": r.humidity,
+                        "pressure_hPa": r.pressure,
+                        "dew_point_C": r.temperature - ((100 - r.humidity) / 5) # Approximation
+                    })
+                
+                history_df = pd.DataFrame(data)
+                
+                # 2. Run Inference
+                json_result = ml_engine.process_live_reading(history_df)
+                result = json.loads(json_result)
+                
+                # Extract anomaly details
+                anomaly_analysis = result.get("anomaly_analysis", {})
+                severity = anomaly_analysis.get("severity_level", "NONE")
+                
+                if severity != "NONE":
+                    anomaly = AnomalyEvent.objects.create(
+                        station=telemetry_instance.station,
+                        reading=telemetry_instance,
+                        anomaly_type=anomaly_analysis.get("detected_root_cause", "UNKNOWN"),
+                        severity=severity,
+                        score=anomaly_analysis.get("confidence_score_pct", 0.0) / 100.0,
+                        confidence=anomaly_analysis.get("confidence_score_pct", 0.0) / 100.0,
+                        description=result.get("explainability", {}).get("human_readable_reason", ""),
+                        status="active",
+                    )
+                    
+                    if channel_layer:
+                        anomaly_payload = {
+                            "id": anomaly.id,
+                            "stationId": telemetry_instance.station.station_id,
+                            "timestamp": str(anomaly.timestamp),
+                            "type": anomaly.anomaly_type,
+                            "severity": anomaly.severity,
+                            "score": anomaly.score,
+                            "confidence": anomaly.confidence,
+                            "status": anomaly.status,
+                            "description": anomaly.description,
+                        }
+                        async_to_sync(channel_layer.group_send)(
+                            'telemetry_alerts',
+                            {
+                                'type': 'send_anomaly',
+                                'message': anomaly_payload,
+                            }
+                        )
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                print(f"Error during ML inference: {e}")
 
     @action(detail=False, methods=['get'])
     def latest(self, request):

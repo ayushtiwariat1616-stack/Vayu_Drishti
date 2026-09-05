@@ -26,3 +26,5 @@ models/*.pkl
 .DS_Store
 Thumbs.db
 .vscode/
+db.sqlite3
+desktop.ini
