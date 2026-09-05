@@ -1,4 +1,8 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 # Create your models here.
 class Station(models.Model):
@@ -28,6 +32,30 @@ class Telemetry(models.Model):
     def __str__(self):
         return f"Station {self.station.station_id} - Temp: {self.temperature} at {self.timestamp}"
     
+@receiver(post_save, sender=Telemetry) 
+def broadcast_new_reading(sender, instance, created, **kwargs):
+    if created:
+        channel_layer = get_channel_layer()
+        
+        # 1. Format the blast payload
+        payload = {
+            # Make sure this matches how your model accesses the station ID!
+            "station_id": instance.station.station_id if hasattr(instance.station, 'station_id') else instance.station.id,
+            "temperature": instance.temperature,
+            "humidity": instance.humidity,
+            "pressure": instance.pressure,
+            "timestamp": str(instance.timestamp)
+        }
+        
+        # 2. Fire the blast into Redis using YOUR exact group name!
+        async_to_sync(channel_layer.group_send)(
+            "telemetry_alerts",  # <-- The group name from your connect() method!
+            {
+                "type": "send_alert",  # <-- The exact name of your function at the bottom!
+                "message": payload     # <-- What your event['message'] is looking for!
+            }
+        )
+    
 class SensorReading(models.Model):
     reading_id = models.CharField(max_length=50, primary_key=True)
     station = models.ForeignKey(Station, on_delete=models.CASCADE)
@@ -44,7 +72,12 @@ class SensorReading(models.Model):
 class AnomalyEvent(models.Model):
     station = models.ForeignKey(Station, on_delete=models.CASCADE, related_name='anomalies')
     reading = models.ForeignKey(Telemetry, on_delete=models.CASCADE)
+    anomaly_type = models.CharField(max_length=50, default='UNKNOWN')
+    severity = models.CharField(max_length=20, default='MEDIUM')
+    score = models.FloatField(default=0.0)
+    confidence = models.FloatField(default=0.0)
     description = models.CharField(max_length=255)
+    status = models.CharField(max_length=20, default='active')
     timestamp = models.DateTimeField(auto_now_add=True)
     is_resolved = models.BooleanField(default=False)
     

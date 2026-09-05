@@ -153,11 +153,24 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
+# If REDIS_URL is provided by Render, use Redis. Otherwise, fallback to in-memory for local training.
+if 'REDIS_URL' in os.environ:
+    CHANNEL_LAYERS = {
+        "default": {
+            # 🛑 OLD WEAKNESS: "channels_redis.core.RedisChannelLayer"
+            # 🔥 SAIYAN ELITE UPGRADE: Native Pub/Sub!
+            "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
+            "CONFIG": {
+                "hosts": [os.environ.get('REDIS_URL')],
+            },
+        },
     }
-}
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer"
+        }
+    }
 CSRF_TRUSTED_ORIGINS = [
     'https://vayu-drishti-h8xr.onrender.com',
 ]

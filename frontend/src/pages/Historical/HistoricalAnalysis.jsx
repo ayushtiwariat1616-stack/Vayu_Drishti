@@ -62,7 +62,14 @@ export default function HistoricalAnalysis() {
             onChange={e => setStation(e.target.value)}
             className="text-sm border border-atmo-border rounded-lg px-3 py-2 bg-atmo-surface text-atmo-deep outline-none focus:border-teal/50 min-w-[140px]"
           >
-            {stations.map(s => <option key={s.id} value={s.id}>{s.id} — {s.location.name}</option>)}
+            {stations.map(s => (
+              <option 
+                key={s.station_id || s.id} 
+                value={s.station_id || s.id}
+              >
+                {s.station_id || s.id} — {s.name || (s.latitude && s.longitude ? `Lat: ${s.latitude}°, Lon: ${s.longitude}°` : 'Location Pending')}
+              </option>
+            ))}
           </select>
         </div>
 

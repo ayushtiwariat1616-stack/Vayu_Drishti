@@ -1,37 +1,50 @@
-import { useState, useEffect, useRef } from 'react';
-import { useApp } from '../../context/AppContext';
-import { TrendingUp, TrendingDown, Minus, Activity, Radio, AlertTriangle, HeartPulse } from 'lucide-react';
-import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
+import { useState, useEffect, useRef } from "react";
+import { useApp } from "../../context/AppContext";
+import {
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  Activity,
+  Radio,
+  AlertTriangle,
+  HeartPulse,
+} from "lucide-react";
+import { LineChart, Line, ResponsiveContainer, Tooltip } from "recharts";
 import LiveEventStream from "../../components/system/LiveEventStream";
-import { formatRelative } from '../../utils/formatters';
-import { useNavigate } from 'react-router-dom';
-import TelemetryRadar from '../../components/ui/TelemetryRadar'; // Adjust path if necessary
+import { formatRelative } from "../../utils/formatters";
+import { useNavigate } from "react-router-dom";
+import TelemetryRadar from "../../components/ui/TelemetryRadar"; // Adjust path if necessary
 
 // Animated number component
-function AnimatedNumber({ value, decimals = 1, className = '' }) {
+function AnimatedNumber({ value, decimals = 1, className = "" }) {
   const [display, setDisplay] = useState(value);
   const prev = useRef(value);
 
   useEffect(() => {
     if (value === prev.current) return;
     const start = prev.current;
-    const end   = value;
+    const end = value;
     const duration = 600;
     const startTime = performance.now();
 
     const animate = (now) => {
       const t = Math.min((now - startTime) / duration, 1);
       const ease = 1 - (1 - t) ** 3;
-      setDisplay(parseFloat((start + (end - start) * ease).toFixed(decimals + 1)));
+      setDisplay(
+        parseFloat((start + (end - start) * ease).toFixed(decimals + 1)),
+      );
       if (t < 1) requestAnimationFrame(animate);
-      else { setDisplay(end); prev.current = end; }
+      else {
+        setDisplay(end);
+        prev.current = end;
+      }
     };
     requestAnimationFrame(animate);
   }, [value, decimals]);
 
   return (
     <span className={`tabular ${className}`}>
-      {typeof display === 'number' ? display.toFixed(decimals) : display}
+      {typeof display === "number" ? display.toFixed(decimals) : display}
     </span>
   );
 }
@@ -58,15 +71,26 @@ function Sparkline({ data = [], dataKey, color }) {
 function Trend({ current, baseline }) {
   if (baseline == null) return null;
   const diff = current - baseline;
-  const pct  = ((Math.abs(diff) / Math.abs(baseline)) * 100).toFixed(1);
+  const pct = ((Math.abs(diff) / Math.abs(baseline)) * 100).toFixed(1);
   if (Math.abs(diff) < 0.01) {
-    return <span className="flex items-center gap-0.5 text-atmo-muted text-xs"><Minus className="w-3 h-3" /> Stable</span>;
+    return (
+      <span className="flex items-center gap-0.5 text-atmo-muted text-xs">
+        <Minus className="w-3 h-3" /> Stable
+      </span>
+    );
   }
   const up = diff > 0;
   return (
-    <span className={`flex items-center gap-0.5 text-xs font-medium ${up ? 'text-critical' : 'text-sky'}`}>
-      {up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-      {up ? '+' : ''}{diff.toFixed(1)} vs baseline
+    <span
+      className={`flex items-center gap-0.5 text-xs font-medium ${up ? "text-critical" : "text-sky"}`}
+    >
+      {up ? (
+        <TrendingUp className="w-3 h-3" />
+      ) : (
+        <TrendingDown className="w-3 h-3" />
+      )}
+      {up ? "+" : ""}
+      {diff.toFixed(1)} vs baseline
     </span>
   );
 }
@@ -85,7 +109,18 @@ function RangeBar({ value, min, max }) {
 }
 
 // Individual sensor card
-function SensorCard({ label, value, unit, icon: Icon, color, dataKey, readings, baseline, status, range }) {
+function SensorCard({
+  label,
+  value,
+  unit,
+  icon: Icon,
+  color,
+  dataKey,
+  readings,
+  baseline,
+  status,
+  range,
+}) {
   const current = readings.slice(-1)[0]?.[dataKey] ?? value;
 
   return (
@@ -96,8 +131,12 @@ function SensorCard({ label, value, unit, icon: Icon, color, dataKey, readings, 
           <Icon className="w-3.5 h-3.5" style={{ color }} />
           {label}
         </div>
-        <span className={`badge ${status === 'NORMAL' ? 'badge-normal' : status === 'HIGH' ? 'badge-high' : 'badge-medium'}`}>
-          <span className={`status-dot ${status === 'NORMAL' ? 'status-dot-live' : status === 'HIGH' ? 'status-dot-critical' : 'status-dot-warning'}`} />
+        <span
+          className={`badge ${status === "NORMAL" ? "badge-normal" : status === "HIGH" ? "badge-high" : "badge-medium"}`}
+        >
+          <span
+            className={`status-dot ${status === "NORMAL" ? "status-dot-live" : status === "HIGH" ? "status-dot-critical" : "status-dot-warning"}`}
+          />
           {status}
         </span>
       </div>
@@ -125,8 +164,14 @@ function SensorCard({ label, value, unit, icon: Icon, color, dataKey, readings, 
         <div>
           <RangeBar value={current} min={range.min} max={range.max} />
           <div className="flex justify-between mt-1">
-            <span className="mono text-2xs text-atmo-muted">{range.min}{unit}</span>
-            <span className="mono text-2xs text-atmo-muted">{range.max}{unit}</span>
+            <span className="mono text-2xs text-atmo-muted">
+              {range.min}
+              {unit}
+            </span>
+            <span className="mono text-2xs text-atmo-muted">
+              {range.max}
+              {unit}
+            </span>
           </div>
         </div>
       )}
@@ -135,12 +180,14 @@ function SensorCard({ label, value, unit, icon: Icon, color, dataKey, readings, 
 }
 
 // Network summary chip
-function SummaryChip({ label, value, color = 'text-atmo-deep', sublabel }) {
+function SummaryChip({ label, value, color = "text-atmo-deep", sublabel }) {
   return (
     <div className="card-sm px-5 py-3 flex flex-col">
       <div className="label mb-1">{label}</div>
       <div className={`text-3xl font-bold tabular ${color}`}>{value}</div>
-      {sublabel && <div className="text-2xs text-atmo-muted mt-0.5">{sublabel}</div>}
+      {sublabel && (
+        <div className="text-2xs text-atmo-muted mt-0.5">{sublabel}</div>
+      )}
     </div>
   );
 }
@@ -155,31 +202,53 @@ function StationRow({ station, readings }) {
       className="w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-atmo-mid/60
                  transition-all duration-200 text-left group"
     >
-      <span className={`status-dot ${
-        station.status === 'healthy' ? 'status-dot-live' :
-        station.status === 'monitoring' ? 'status-dot-warning' : 'status-dot-muted'
-      }`} />
+      <span
+        className={`status-dot ${
+          station.status === "healthy"
+            ? "status-dot-live"
+            : station.status === "monitoring"
+              ? "status-dot-warning"
+              : "status-dot-muted"
+        }`}
+      />
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-semibold text-atmo-deep">{station.id}</div>
-        <div className="text-2xs text-atmo-muted">{station.location.name}</div>
+        <div className="text-sm font-semibold text-atmo-deep">
+          {station.id}
+        </div>
+        <div className="text-2xs text-atmo-muted">
+          {station.location?.lat && station.location?.lon
+            ? `Lat: ${station.location.lat}°, Lon: ${station.location.lon}°`
+            : "Location Pending"}
+        </div>
       </div>
       <div className="flex items-center gap-5 text-xs tabular">
         <div className="text-center">
           <div className="text-atmo-muted text-2xs">TEMP</div>
-          <div className="font-semibold text-atmo-deep mono">{r.temperature?.toFixed(1) ?? '—'}°C</div>
+          <div className="font-semibold text-atmo-deep mono">
+            {r.temperature?.toFixed(1) ?? "—"}°C
+          </div>
         </div>
         <div className="text-center">
           <div className="text-atmo-muted text-2xs">HUM</div>
-          <div className="font-semibold text-atmo-deep mono">{r.humidity?.toFixed(0) ?? '—'}%</div>
+          <div className="font-semibold text-atmo-deep mono">
+            {r.humidity?.toFixed(0) ?? "—"}%
+          </div>
         </div>
         <div className="text-center">
           <div className="text-atmo-muted text-2xs">PRESS</div>
-          <div className="font-semibold text-atmo-deep mono">{r.pressure?.toFixed(0) ?? '—'} hPa</div>
+          <div className="font-semibold text-atmo-deep mono">
+            {r.pressure?.toFixed(0) ?? "—"} hPa
+          </div>
         </div>
-        <div className={`badge ${
-          station.status === 'healthy' ? 'badge-healthy' :
-          station.status === 'monitoring' ? 'badge-medium' : 'badge-watch'
-        }`}>
+        <div
+          className={`badge ${
+            station.status === "healthy"
+              ? "badge-healthy"
+              : station.status === "monitoring"
+                ? "badge-medium"
+                : "badge-watch"
+          }`}
+        >
           {station.status.toUpperCase()}
         </div>
       </div>
@@ -189,14 +258,38 @@ function StationRow({ station, readings }) {
 
 export default function CommandCenter() {
   const { state } = useApp();
-  const { stations, currentReadings, telemetry, anomalies, anomalyStats, baselines, events } = state;
+  const {
+    stations,
+    currentReadings,
+    telemetry,
+    anomalies,
+    anomalyStats,
+    baselines,
+    events,
+    connectionStatus,
+  } = state;
+
+  // 🛡️ THE SAIYAN SHIELD: If no stations exist yet, do not attempt to render the charts!
+  if (!stations || stations.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-atmo-muted">
+        <div className="text-2xl font-bold mb-2 tracking-widest text-atmo-deep">
+          AWAITING TELEMETRY
+        </div>
+        <p className="text-sm">
+          Command Center standing by. Waiting for backend sync...
+        </p>
+        <p className="text-xs mt-4 text-sky">Status: {connectionStatus}</p>
+      </div>
+    );
+  }
 
   const selected = stations.find(s => s.id === state.selectedStation) || stations[0];
   const cr = currentReadings[selected.id] || {};
   const bl = baselines[selected.id] || {};
   const td = telemetry[selected.id] || [];
 
-  const activeAlerts = anomalies.filter(a => a.status === 'active').length;
+  const activeAlerts = anomalies.filter((a) => a.status === "active").length;
 
   return (
     <div className="px-6 py-5 space-y-5">
@@ -204,39 +297,55 @@ export default function CommandCenter() {
       <div className="animate-in-up">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-atmo-deep tracking-tight">Command Center</h1>
-            <p className="text-sm text-atmo-muted mt-0.5">Real-time overview of the AWS monitoring network</p>
+            <h1 className="text-2xl font-bold text-atmo-deep tracking-tight">
+              Command Center
+            </h1>
+            <p className="text-sm text-atmo-muted mt-0.5">
+              Real-time overview of the AWS monitoring network
+            </p>
           </div>
           <div className="text-right">
             <div className="flex items-center gap-2 justify-end">
               <span className="status-dot status-dot-live" />
-              <span className="text-xs font-semibold text-mint tracking-wider">SYSTEM OPERATIONAL</span>
+              <span className="text-xs font-semibold text-mint tracking-wider">
+                SYSTEM OPERATIONAL
+              </span>
             </div>
-            <div className="text-2xs text-atmo-muted mt-0.5">{selected.id} · WebSocket LIVE</div>
+            <div className="text-2xs text-atmo-muted mt-0.5">
+              {selected.id} · WebSocket LIVE
+            </div>
           </div>
         </div>
       </div>
 
       {/* Network Summary */}
       <div className="grid grid-cols-4 gap-3 animate-in-up stagger-1">
-        <SummaryChip label="ACTIVE STATIONS" value={stations.length} sublabel="Monitored nodes" />
+        <SummaryChip
+          label="ACTIVE STATIONS"
+          value={stations.length}
+          sublabel="Monitored nodes"
+        />
         <SummaryChip
           label="HEALTHY"
-          value={stations.filter(s => s.status === 'healthy').length}
+          value={stations.filter((s) => s.status === "healthy").length}
           color="text-mint"
           sublabel="Operating normally"
         />
         <SummaryChip
           label="MONITORING"
-          value={stations.filter(s => s.status === 'monitoring').length}
+          value={stations.filter((s) => s.status === "monitoring").length}
           color="text-amber"
           sublabel="Degraded sensors"
         />
         <SummaryChip
           label="ACTIVE ALERTS"
           value={activeAlerts}
-          color={activeAlerts > 0 ? 'text-critical' : 'text-atmo-deep'}
-          sublabel={activeAlerts > 0 ? `${anomalyStats.high} HIGH severity` : 'All clear'}
+          color={activeAlerts > 0 ? "text-critical" : "text-atmo-deep"}
+          sublabel={
+            activeAlerts > 0
+              ? `${anomalyStats.high} HIGH severity`
+              : "All clear"
+          }
         />
       </div>
 
@@ -251,7 +360,7 @@ export default function CommandCenter() {
           dataKey="temperature"
           readings={td}
           baseline={bl.temperature}
-          status={cr.anomalyScore > 0.6 ? 'HIGH' : 'NORMAL'}
+          status={(cr.temperature ?? 0) > 50 || (cr.temperature ?? 0) < -10 ? "HIGH" : "NORMAL"}
           range={bl.temperature}
         />
         <SensorCard
@@ -263,7 +372,7 @@ export default function CommandCenter() {
           dataKey="pressure"
           readings={td}
           baseline={bl.pressure}
-          status="NORMAL"
+          status={(cr.pressure ?? 0) < 950 || (cr.pressure ?? 0) > 1060 ? "MEDIUM" : "NORMAL"}
           range={bl.pressure}
         />
         <SensorCard
@@ -275,7 +384,7 @@ export default function CommandCenter() {
           dataKey="humidity"
           readings={td}
           baseline={bl.humidity}
-          status="NORMAL"
+          status={(cr.humidity ?? 0) > 95 || (cr.humidity ?? 0) < 10 ? "MEDIUM" : "NORMAL"}
           range={bl.humidity}
         />
       </div>
@@ -288,30 +397,53 @@ export default function CommandCenter() {
             <Radio className="w-3.5 h-3.5 text-teal" /> STATION OVERVIEW
           </div>
           <div className="space-y-1">
-            {stations.map(s => (
-              <StationRow key={s.id} station={s} readings={currentReadings} />
+            {stations.map((s, index) => (
+              <StationRow
+                key={s.id || `station-${index}`}
+                station={s}
+                readings={currentReadings}
+              />
             ))}
           </div>
 
           {/* Anomaly summary */}
           <div className="mt-4 pt-4 border-t border-atmo-border">
             <div className="label mb-2 flex items-center gap-1.5">
-              <AlertTriangle className="w-3.5 h-3.5 text-critical" /> RECENT ANOMALIES
+              <AlertTriangle className="w-3.5 h-3.5 text-critical" /> RECENT
+              ANOMALIES
             </div>
             <div className="space-y-1.5">
-              {anomalies.filter(a => a.status === 'active').slice(0, 3).map(a => (
-                <div key={a.id} className={`flex items-center gap-3 px-3 py-2 rounded-lg
-                  ${a.severity === 'HIGH' ? 'bg-critical/5 border border-critical/10' : 'bg-amber/5 border border-amber/10'}`}>
-                  <span className={`status-dot ${a.severity === 'HIGH' ? 'status-dot-critical' : 'status-dot-warning'}`} />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-xs font-medium">{a.type?.replace(/_/g, ' ')}</span>
-                    <span className="text-2xs text-atmo-muted ml-2">{a.stationId}</span>
+              {anomalies
+                .filter((a) => a.status === "active")
+                .slice(0, 3)
+                .map((a) => (
+                  <div
+                    key={a.id}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg
+                  ${a.severity === "HIGH" ? "bg-critical/5 border border-critical/10" : "bg-amber/5 border border-amber/10"}`}
+                  >
+                    <span
+                      className={`status-dot ${a.severity === "HIGH" ? "status-dot-critical" : "status-dot-warning"}`}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <span className="text-xs font-medium">
+                        {a.type?.replace(/_/g, " ")}
+                      </span>
+                      <span className="text-2xs text-atmo-muted ml-2">
+                        {a.stationId}
+                      </span>
+                    </div>
+                    <span
+                      className={`badge ${a.severity === "HIGH" ? "badge-high" : "badge-medium"}`}
+                    >
+                      {a.severity}
+                    </span>
+                    <span className="mono text-2xs text-atmo-muted">
+                      {formatRelative(a.timestamp)}
+                    </span>
                   </div>
-                  <span className={`badge ${a.severity === 'HIGH' ? 'badge-high' : 'badge-medium'}`}>{a.severity}</span>
-                  <span className="mono text-2xs text-atmo-muted">{formatRelative(a.timestamp)}</span>
-                </div>
-              ))}
-              {anomalies.filter(a => a.status === 'active').length === 0 && (
+                ))}
+              {anomalies.filter((a) => a.status === "active").length === 0 && (
                 <div className="text-center py-4 text-atmo-muted text-xs">
                   ✓ No active anomalies
                 </div>
@@ -323,8 +455,11 @@ export default function CommandCenter() {
         {/* Live Events & Threat Radar */}
         <div className="col-span-2 flex flex-col gap-4">
           {/* Your Custom WebSocket Weapon */}
-          <TelemetryRadar />
-          
+          <TelemetryRadar
+            alerts={anomalies}
+            connectionStatus={connectionStatus}
+          />
+
           {/* The Existing Event Stream */}
           <div className="flex-1 min-h-[400px]">
             <LiveEventStream events={events} maxItems={10} className="h-full" />

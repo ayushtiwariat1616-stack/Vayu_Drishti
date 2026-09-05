@@ -10,6 +10,20 @@ export default function LiveMonitor() {
   const { stations, telemetry, anomalies, events, selectedStation, currentReadings } = state;
 
   const selected = stations.find(s => s.id === selectedStation) || stations[0];
+
+  if (!selected) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-atmo-muted">
+        <div className="text-2xl font-bold mb-2 tracking-widest text-atmo-deep">
+          AWAITING TELEMETRY
+        </div>
+        <p className="text-sm">
+          Live Monitor standing by. Waiting for backend sync...
+        </p>
+      </div>
+    );
+  }
+
   const data   = telemetry[selectedStation] || [];
   const cr     = currentReadings[selectedStation] || {};
   const stationAnomalies = anomalies.filter(a => a.stationId === selectedStation);
