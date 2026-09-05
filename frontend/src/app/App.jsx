@@ -68,25 +68,9 @@ function AppShell() {
 }
 
 export default function App() {
-  // 1. FORGE THE WEAPON FIRST (Declare State)
-  const [stations, setStations] = useState([]);
-
-  // 2. FIRE THE WEAPON (Execute Effect using the cloud-configured apiClient)
-  useEffect(() => {
-    apiClient.get('/sensors/')
-      .then(response => {
-        // Axios stores the payload in response.data
-        const payload = response.data || response;
-        console.log("Radar Data Received:", payload); 
-        setStations(payload); 
-      })
-      .catch(error => console.error("Strike Failed:", error));
-  }, []); 
-
-  // 3. RENDER THE BATTLEFIELD
   return (
     <BrowserRouter>
-      <AppProvider stations={stations}>
+      <AppProvider>
         <AppShell />
       </AppProvider>
     </BrowserRouter>

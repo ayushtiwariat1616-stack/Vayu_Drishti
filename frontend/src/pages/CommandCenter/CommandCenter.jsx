@@ -195,10 +195,10 @@ function SummaryChip({ label, value, color = "text-atmo-deep", sublabel }) {
 // Station status row
 function StationRow({ station, readings }) {
   const navigate = useNavigate();
-  const r = readings[station.station_id] || {};
+  const r = readings[station.id] || {};
   return (
     <button
-      onClick={() => navigate(`/stations/${station.station_id}`)}
+      onClick={() => navigate(`/stations/${station.id}`)}
       className="w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-atmo-mid/60
                  transition-all duration-200 text-left group"
     >
@@ -213,11 +213,11 @@ function StationRow({ station, readings }) {
       />
       <div className="flex-1 min-w-0">
         <div className="text-sm font-semibold text-atmo-deep">
-          {station.station_id}
+          {station.id}
         </div>
         <div className="text-2xs text-atmo-muted">
-          {station.latitude && station.longitude
-            ? `Lat: ${station.latitude}°, Lon: ${station.longitude}°`
+          {station.location?.lat && station.location?.lon
+            ? `Lat: ${station.location.lat}°, Lon: ${station.location.lon}°`
             : "Location Pending"}
         </div>
       </div>
@@ -284,7 +284,7 @@ export default function CommandCenter() {
     );
   }
 
-  const selected = stations.find(s => (s.station_id || s.id) === state.selectedStation) || stations[0];
+  const selected = stations.find(s => s.id === state.selectedStation) || stations[0];
   const cr = currentReadings[selected.id] || {};
   const bl = baselines[selected.id] || {};
   const td = telemetry[selected.id] || [];
@@ -360,7 +360,7 @@ export default function CommandCenter() {
           dataKey="temperature"
           readings={td}
           baseline={bl.temperature}
-          status={cr.anomalyScore > 0.6 ? "HIGH" : "NORMAL"}
+          status={(cr.temperature ?? 0) > 50 || (cr.temperature ?? 0) < -10 ? "HIGH" : "NORMAL"}
           range={bl.temperature}
         />
         <SensorCard
@@ -372,7 +372,7 @@ export default function CommandCenter() {
           dataKey="pressure"
           readings={td}
           baseline={bl.pressure}
-          status="NORMAL"
+          status={(cr.pressure ?? 0) < 950 || (cr.pressure ?? 0) > 1060 ? "MEDIUM" : "NORMAL"}
           range={bl.pressure}
         />
         <SensorCard
@@ -384,7 +384,7 @@ export default function CommandCenter() {
           dataKey="humidity"
           readings={td}
           baseline={bl.humidity}
-          status="NORMAL"
+          status={(cr.humidity ?? 0) > 95 || (cr.humidity ?? 0) < 10 ? "MEDIUM" : "NORMAL"}
           range={bl.humidity}
         />
       </div>
@@ -399,7 +399,7 @@ export default function CommandCenter() {
           <div className="space-y-1">
             {stations.map((s, index) => (
               <StationRow
-                key={s.station_id || s.id || `station-${index}`}
+                key={s.id || `station-${index}`}
                 station={s}
                 readings={currentReadings}
               />

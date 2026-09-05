@@ -72,7 +72,12 @@ class SensorReading(models.Model):
 class AnomalyEvent(models.Model):
     station = models.ForeignKey(Station, on_delete=models.CASCADE, related_name='anomalies')
     reading = models.ForeignKey(Telemetry, on_delete=models.CASCADE)
+    anomaly_type = models.CharField(max_length=50, default='UNKNOWN')
+    severity = models.CharField(max_length=20, default='MEDIUM')
+    score = models.FloatField(default=0.0)
+    confidence = models.FloatField(default=0.0)
     description = models.CharField(max_length=255)
+    status = models.CharField(max_length=20, default='active')
     timestamp = models.DateTimeField(auto_now_add=True)
     is_resolved = models.BooleanField(default=False)
     

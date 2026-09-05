@@ -5,8 +5,11 @@ import { mockReadings, generateReadings } from '../mock/readings.mock';
 import { mockAnomalies, mockAnomalyStats } from '../mock/anomalies.mock';
 import { mockSensorHealth, generateMockEvents } from '../mock/health.mock';
 import { WS_URL, apiClient } from '../api/client';
+import { adaptStationsList } from '../api/adapters/station.adapter';
+import { adaptTelemetry } from '../api/adapters/telemetry.adapter';
+import { adaptAnomaliesList, adaptAnomaly } from '../api/adapters/anomaly.adapter';
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'; // default true
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'; // Set default securely
 
 const initialState = {
   // Connection
@@ -42,6 +45,11 @@ function reducer(state, action) {
       return { ...state, connectionStatus: action.payload };
     case 'SET_WS_CONNECTED':
       return { ...state, wsConnected: action.payload };
+    // Bulk-load historical readings fetched from /sensors/ on boot
+    case 'SET_INITIAL_READINGS': {
+      const { telemetry, currentReadings } = action.payload;
+      return { ...state, telemetry, currentReadings };
+    }
     case 'NEW_READING': {
       const { stationId, reading } = action.payload;
       const prev = state.telemetry[stationId] || [];
@@ -59,6 +67,16 @@ function reducer(state, action) {
         stations,
         lastUpdate: now,
       };
+    }
+    case 'SET_INITIAL_ANOMALIES': {
+      const anomalies = action.payload;
+      const stats = {
+        total: anomalies.length,
+        high:   anomalies.filter(a => a.severity === 'HIGH').length,
+        medium: anomalies.filter(a => a.severity === 'MEDIUM').length,
+        watch:  anomalies.filter(a => a.severity === 'WATCH').length,
+      };
+      return { ...state, anomalies, anomalyStats: stats };
     }
     case 'NEW_ANOMALY': {
       const anomaly = action.payload;
@@ -109,9 +127,50 @@ export function AppProvider({ children }) {
         const stationData = await apiClient.get('/stations/');
         
         if (stationData && stationData.length > 0) {
-          dispatch({ type: 'SET_STATIONS', payload: stationData });
-          dispatch({ type: 'SET_SELECTED_STATION', payload: stationData[0].id });
-          console.log("Shields down! Stations loaded:", stationData);
+          const adaptedStations = adaptStationsList(stationData);
+          dispatch({ type: 'SET_STATIONS', payload: adaptedStations });
+          dispatch({ type: 'SET_SELECTED_STATION', payload: adaptedStations[0].id });
+          console.log("Shields down! Stations loaded:", adaptedStations);
+        }
+
+        // Fetch existing sensor telemetry (up to last 200 per station)
+        console.log("Fetching sensor readings from Django...");
+        const sensorData = await apiClient.get('/telemetry/?limit=200');
+        
+        if (sensorData && sensorData.length > 0) {
+          // Group readings by station and build telemetry + currentReadings
+          const telemetry = {};
+          const currentReadings = {};
+
+          // The results from ModelViewSet come in an array directly if pagination is off, or inside .results if paginated
+          const records = sensorData.results || sensorData;
+
+          records.forEach(raw => {
+            const reading = adaptTelemetry(raw);
+            const sid = reading.stationId;
+
+            if (!telemetry[sid]) telemetry[sid] = [];
+            telemetry[sid].push(reading);
+          });
+
+          // Sort each station's readings by timestamp, pick latest as currentReading
+          Object.keys(telemetry).forEach(sid => {
+            telemetry[sid].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            currentReadings[sid] = telemetry[sid][telemetry[sid].length - 1];
+          });
+
+          dispatch({ type: 'SET_INITIAL_READINGS', payload: { telemetry, currentReadings } });
+          console.log("Sensor readings loaded:", { telemetry, currentReadings });
+        }
+
+        // Fetch active anomalies
+        console.log("Fetching active anomalies from Django...");
+        const anomalyData = await apiClient.get('/anomalies/?status=active');
+        if (anomalyData) {
+          const records = anomalyData.results || anomalyData;
+          const adaptedAnomalies = adaptAnomaliesList(records);
+          dispatch({ type: 'SET_INITIAL_ANOMALIES', payload: adaptedAnomalies });
+          console.log("Anomalies loaded:", adaptedAnomalies);
         }
       } catch (error) {
         console.error("CRITICAL FAILURE: Could not reach Django API!", error);
@@ -183,11 +242,13 @@ export function AppProvider({ children }) {
       ws.onmessage = (event) => {
         try {
           const msg = JSON.parse(event.data);
-          if (msg.type === 'reading') {
-            dispatch({ type: 'NEW_READING', payload: { stationId: msg.stationId, reading: msg.data } });
+          if (msg.type === 'reading' || msg.type === 'NEW_READING') {
+            const adaptedReading = adaptTelemetry(msg.data);
+            dispatch({ type: 'NEW_READING', payload: { stationId: adaptedReading.stationId, reading: adaptedReading } });
           } else if (msg.type === 'anomaly') {
-            dispatch({ type: 'NEW_ANOMALY', payload: msg.data });
-            dispatch({ type: 'ADD_EVENT', payload: { id: `e${Date.now()}`, ts: new Date().toISOString(), type: 'anomaly', icon: '🔴', text: `ANOMALY — ${msg.data.type}`, stationId: msg.data.stationId, anomalyId: msg.data.id } });
+            const adaptedAnomaly = adaptAnomaly(msg.data);
+            dispatch({ type: 'NEW_ANOMALY', payload: adaptedAnomaly });
+            dispatch({ type: 'ADD_EVENT', payload: { id: `e${Date.now()}`, ts: new Date().toISOString(), type: 'anomaly', icon: '🔴', text: `ANOMALY — ${adaptedAnomaly.type}`, stationId: adaptedAnomaly.stationId, anomalyId: adaptedAnomaly.id } });
           } else if (msg.type === 'health') {
             dispatch({ type: 'UPDATE_HEALTH', payload: { stationId: msg.stationId, health: msg.data } });
           }

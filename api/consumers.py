@@ -1,6 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 
+
 class TelemetryConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.group_name = 'telemetry_alerts'
@@ -21,10 +22,20 @@ class TelemetryConsumer(AsyncWebsocketConsumer):
         )
         print("🔴 CONNECTION LOST: React Frontend Disconnected.")
 
-    # The firing mechanism: How the turret shoots data to React
+    # Handler for normal telemetry readings (from models.py signal)
     async def send_alert(self, event):
         message = event['message']
         await self.send(text_data=json.dumps({
-            'type': 'NEW_READING',  # 🛑 THE FIX: Stop screaming anomaly!
+            'type': 'reading',
+            'stationId': message.get('station_id', ''),
+            'data': message
+        }))
+
+    # Handler for anomaly events (from views.py)
+    async def send_anomaly(self, event):
+        message = event['message']
+        await self.send(text_data=json.dumps({
+            'type': 'anomaly',
+            'stationId': message.get('stationId', ''),
             'data': message
         }))
