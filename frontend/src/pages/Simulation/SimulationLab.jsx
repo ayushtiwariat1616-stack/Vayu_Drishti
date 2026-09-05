@@ -110,7 +110,7 @@ function PipelineStep({ step, state: stepState, isLast }) {
 }
 
 export default function SimulationLab() {
-  const { injectMockAnomaly } = useApp();
+  const { state } = useApp();
   const navigate = useNavigate();
 
   const [running, setRunning]             = useState(false);
