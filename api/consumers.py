@@ -25,6 +25,6 @@ class TelemetryConsumer(AsyncWebsocketConsumer):
     async def send_alert(self, event):
         message = event['message']
         await self.send(text_data=json.dumps({
-            'type': 'anomaly_alert',
+            'type': 'new_reading',  # 🛑 THE FIX: Stop screaming anomaly!
             'data': message
         }))
