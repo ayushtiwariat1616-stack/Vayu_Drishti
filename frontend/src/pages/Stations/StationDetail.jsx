@@ -59,7 +59,7 @@ export default function StationDetail() {
           <div>
             <div className="flex items-center gap-3">
               <span className={`status-dot w-3 h-3 ${station.status === 'healthy' ? 'status-dot-live' : 'status-dot-warning'}`} />
-              <h1 className="text-2xl font-bold text-atmo-deep">{station.id}</h1>
+              <h1 className="text-2xl font-bold text-atmo-deep">{station.station_id}</h1>
             </div>
             <div className="flex items-center gap-3 mt-1.5 text-sm text-atmo-muted">
               <MapPin className="w-3.5 h-3.5" />
@@ -186,7 +186,7 @@ export default function StationDetail() {
           anomalies={stationAnomalies}
           mode="live"
           height={300}
-          title={`TELEMETRY · ${station.id}`}
+          title={`TELEMETRY · ${station.station_id}`}
           showModeToggle={true}
           showTimeframePicker={true}
           allowMaximize={true}

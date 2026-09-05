@@ -6,3 +6,4 @@ channels
 daphne
 dj-database-url
 whitenoise
+channels-redis

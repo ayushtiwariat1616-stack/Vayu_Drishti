@@ -10,27 +10,25 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'; // default true
 
 const initialState = {
   // Connection
-  connectionStatus: 'CONNECTING', // CONNECTED | DISCONNECTED | RECONNECTING | POLLING
+  connectionStatus: 'CONNECTING', 
   lastUpdate: null,
   wsConnected: false,
 
-  // Stations
-  stations: mockStations,
-  currentReadings: mockCurrentReadings,
-  baselines: mockBaselines,
+  // Stations - Start empty in real mode!
+  stations: USE_MOCK ? mockStations : [],
+  currentReadings: USE_MOCK ? mockCurrentReadings : {},
+  baselines: USE_MOCK ? mockBaselines : {},
 
   // Telemetry
-  telemetry: mockReadings,
+  telemetry: USE_MOCK ? mockReadings : {},
 
-  // Anomalies
-  anomalies: mockAnomalies,
-  anomalyStats: mockAnomalyStats,
+  // Anomalies - THIS IS WHY YOUR RADAR WAS FULL OF GHOSTS!
+  anomalies: USE_MOCK ? mockAnomalies : [],
+  anomalyStats: USE_MOCK ? mockAnomalyStats : { total: 0, high: 0, medium: 0, watch: 0 },
 
-  // Health
-  sensorHealth: mockSensorHealth,
-
-  // Events
-  events: generateMockEvents(),
+  // Health & Events
+  sensorHealth: USE_MOCK ? mockSensorHealth : {},
+  events: USE_MOCK ? generateMockEvents() : [],
 
   // Selected station
   selectedStation: 'AWS-001',
@@ -38,6 +36,8 @@ const initialState = {
 
 function reducer(state, action) {
   switch (action.type) {
+    case 'SET_STATIONS':
+      return { ...state, stations: action.payload };
     case 'SET_CONNECTION':
       return { ...state, connectionStatus: action.payload };
     case 'SET_WS_CONNECTED':
@@ -98,6 +98,29 @@ export function AppProvider({ children }) {
   const pollingTimer = useRef(null);
   const reconnectAttempts = useRef(0);
 
+  // 🌩️ THE REAL DATA PIPELINE: Fetches Django database stations on boot!
+  useEffect(() => {
+    // If we are using mock data, abort this real fetch!
+    if (USE_MOCK) return; 
+
+    const fetchInitialData = async () => {
+      try {
+        console.log("Fetching live stations from Django...");
+        const stationData = await apiClient.get('/stations/');
+        
+        if (stationData && stationData.length > 0) {
+          dispatch({ type: 'SET_STATIONS', payload: stationData });
+          dispatch({ type: 'SET_SELECTED_STATION', payload: stationData[0].id });
+          console.log("Shields down! Stations loaded:", stationData);
+        }
+      } catch (error) {
+        console.error("CRITICAL FAILURE: Could not reach Django API!", error);
+      }
+    };
+
+    fetchInitialData();
+  }, []);
+
   // Simulate live telemetry in mock mode
   useEffect(() => {
     if (!USE_MOCK) return;
@@ -108,12 +131,12 @@ export function AppProvider({ children }) {
     const interval = setInterval(() => {
       // Generate a new reading for each station
       state.stations.forEach(station => {
-        const last = state.telemetry[station.id]?.slice(-1)[0];
+        const last = state.telemetry[station.station_id]?.slice(-1)[0];
         if (!last) return;
 
         const noise = () => (Math.random() - 0.5) * 0.4;
         const reading = {
-          stationId: station.id,
+          stationId: station.station_id,
           timestamp: new Date().toISOString(),
           temperature: parseFloat((last.temperature + noise()).toFixed(2)),
           pressure:    parseFloat((last.pressure + noise() * 0.3).toFixed(1)),
@@ -122,7 +145,7 @@ export function AppProvider({ children }) {
           sensorHealth: station.health,
         };
 
-        dispatch({ type: 'NEW_READING', payload: { stationId: station.id, reading } });
+        dispatch({ type: 'NEW_READING', payload: { stationId: station.station_id, reading } });
       });
 
       dispatch({

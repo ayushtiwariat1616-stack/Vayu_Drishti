@@ -17,8 +17,8 @@ function HealthBar({ value }) {
 
 function StationCard({ station, readings, anomalies }) {
   const navigate = useNavigate();
-  const r = readings[station.id] || {};
-  const stationAnomalies = anomalies.filter(a => a.stationId === station.id && a.status === 'active');
+  const r = readings[station.station_id] || {};
+  const stationAnomalies = anomalies.filter(a => a.stationId === station.station_id && a.status === 'active');
 
   return (
     <div className={`glass p-5 flex flex-col gap-4 transition-all duration-300 hover:shadow-glass-lg animate-in-up
@@ -32,7 +32,7 @@ function StationCard({ station, readings, anomalies }) {
               station.status === 'healthy' ? 'status-dot-live' :
               station.status === 'monitoring' ? 'status-dot-warning' : 'status-dot-muted'
             }`} />
-            <span className="text-lg font-bold text-atmo-deep">{station.id}</span>
+            <span className="text-lg font-bold text-atmo-deep">{station.station_id}</span>
           </div>
           <div className="text-xs text-atmo-muted">{station.location.name}</div>
           <div className="text-2xs text-atmo-muted/60 mt-0.5">{station.device}</div>
@@ -83,7 +83,7 @@ function StationCard({ station, readings, anomalies }) {
 
       {/* Open button */}
       <button
-        onClick={() => navigate(`/stations/${station.id}`)}
+        onClick={() => navigate(`/stations/${station.station_id}`)}
         className="w-full btn-primary flex items-center justify-center gap-2 mt-auto"
       >
         OPEN STATION

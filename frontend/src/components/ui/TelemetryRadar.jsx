@@ -38,10 +38,17 @@ const TelemetryRadar = ({ alerts = [], connectionStatus = '🔴 Disconnected' })
               borderLeft: '4px solid #e53e3e',
               backgroundColor: '#fff5f5',
               borderRadius: '4px',
-              fontSize: '0.95rem',
-              fontWeight: '600'
+              fontSize: '0.95rem'
             }}>
-              {JSON.stringify(alert)}
+              <div style={{ fontWeight: '800', textTransform: 'uppercase' }}>
+                {alert.type ? alert.type.replace(/_/g, ' ') : 'UNKNOWN ANOMALY'}
+              </div>
+              <div style={{ fontSize: '0.8rem', marginTop: '4px', fontWeight: '600', color: '#e53e3e' }}>
+                Severity: {alert.severity || 'HIGH'} | Score: {alert.score || '0.99'}
+              </div>
+              <div style={{ fontSize: '0.8rem', marginTop: '4px', color: '#4a5568' }}>
+                {alert.explanation ? alert.explanation.substring(0, 100) + '...' : 'Critical deviation detected in sensor telemetry.'}
+              </div>
             </div>
           ))
         )}
