@@ -29,8 +29,14 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
 
-# Allow everywhere for now (we will lock this down to your Vercel URL later)
-CORS_ALLOW_ALL_ORIGINS = True
+# Lock down CORS to only allow our frontend applications
+CORS_ALLOW_ALL_ORIGINS = False
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://vayu-drishti-chi.vercel.app/",  # Vercel production URL
+]
 
 
 # Application definition
@@ -146,6 +152,7 @@ MAILERS = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://vayu-drishti-h8xr.onrender.com",
+    "https://vayu-drishti-chi.vercel.app/",
 ]
 
 REST_FRAMEWORK = {
