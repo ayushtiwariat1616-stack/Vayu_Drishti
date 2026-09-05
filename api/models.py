@@ -32,29 +32,29 @@ class Telemetry(models.Model):
     def __str__(self):
         return f"Station {self.station.station_id} - Temp: {self.temperature} at {self.timestamp}"
     
-    @receiver(post_save, sender=Telemetry) 
-    def broadcast_new_reading(sender, instance, created, **kwargs):
-        if created:
-            channel_layer = get_channel_layer()
-            
-            # 1. Format the blast payload
-            payload = {
-                # Make sure this matches how your model accesses the station ID!
-                "station_id": instance.station.station_id if hasattr(instance.station, 'station_id') else instance.station.id,
-                "temperature": instance.temperature,
-                "humidity": instance.humidity,
-                "pressure": instance.pressure,
-                "timestamp": str(instance.timestamp)
+@receiver(post_save, sender=Telemetry) 
+def broadcast_new_reading(sender, instance, created, **kwargs):
+    if created:
+        channel_layer = get_channel_layer()
+        
+        # 1. Format the blast payload
+        payload = {
+            # Make sure this matches how your model accesses the station ID!
+            "station_id": instance.station.station_id if hasattr(instance.station, 'station_id') else instance.station.id,
+            "temperature": instance.temperature,
+            "humidity": instance.humidity,
+            "pressure": instance.pressure,
+            "timestamp": str(instance.timestamp)
+        }
+        
+        # 2. Fire the blast into Redis using YOUR exact group name!
+        async_to_sync(channel_layer.group_send)(
+            "telemetry_alerts",  # <-- The group name from your connect() method!
+            {
+                "type": "send_alert",  # <-- The exact name of your function at the bottom!
+                "message": payload     # <-- What your event['message'] is looking for!
             }
-            
-            # 2. Fire the blast into Redis using YOUR exact group name!
-            async_to_sync(channel_layer.group_send)(
-                "telemetry_alerts",  # <-- The group name from your connect() method!
-                {
-                    "type": "send_alert",  # <-- The exact name of your function at the bottom!
-                    "message": payload     # <-- What your event['message'] is looking for!
-                }
-            )
+        )
     
 class SensorReading(models.Model):
     reading_id = models.CharField(max_length=50, primary_key=True)
