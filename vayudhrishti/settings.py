@@ -157,7 +157,9 @@ REST_FRAMEWORK = {
 if 'REDIS_URL' in os.environ:
     CHANNEL_LAYERS = {
         "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            # 🛑 OLD WEAKNESS: "channels_redis.core.RedisChannelLayer"
+            # 🔥 SAIYAN ELITE UPGRADE: Native Pub/Sub!
+            "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
             "CONFIG": {
                 "hosts": [os.environ.get('REDIS_URL')],
             },
