@@ -146,7 +146,11 @@ export default function SimulationLab() {
     if (scenario.key === 'TEMPERATURE_SPIKE') temperature = 250.0;
     if (scenario.key === 'HUMIDITY_SPIKE') humidity = 105.0;
     if (scenario.key === 'FROZEN_SENSOR') temperature = -50.0;
-    if (scenario.key === 'COMMUNICATION_FAILURE') pressure = 0.0;
+    if (scenario.key === 'COMMUNICATION_FAILURE') {
+      temperature = 0.0;
+      humidity = 0.0;
+      pressure = 0.0;
+    }
 
     try {
       // POST real data to the backend ML pipeline!

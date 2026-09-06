@@ -143,8 +143,7 @@ export default function TelemetryChart({
     const tf = TIMEFRAMES.find(t => t.label === activeTimeframe);
     if (!tf) return data;
     const cutoff = Date.now() - tf.ms;
-    const filtered = data.filter(d => new Date(d.timestamp).getTime() > cutoff);
-    return filtered.length > 0 ? filtered : data.slice(-50);
+    return data.filter(d => new Date(d.timestamp).getTime() > cutoff);
   }, [data, activeTimeframe]);
 
   // Apply zoom

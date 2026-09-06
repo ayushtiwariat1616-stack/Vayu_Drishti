@@ -39,7 +39,15 @@ export default function StationDetail() {
   const cr = currentReadings[id] || {};
   const chartData = telemetry[id] || [];
   const stationAnomalies = anomalies.filter(a => a.stationId === id);
-  const health = sensorHealth[id];
+  const health = sensorHealth[id] || {
+    overall: station.health || 100,
+    trend: Array.from({ length: 24 }, (_, i) => Math.max(0, Math.min(100, (station.health || 100) + Math.sin(i / 2) * 4 + (Math.random() * 4 - 2)))),
+    sensors: {
+      temperature: { health: station.health || 100 },
+      humidity: { health: Math.min(100, (station.health || 100) + 2) },
+      pressure: { health: Math.min(100, (station.health || 100) + 4) }
+    }
+  };
 
   const anomalyStats = {
     total:  stationAnomalies.length,
@@ -88,7 +96,7 @@ export default function StationDetail() {
         <div className="card-sm px-4 py-3">
           <div className="label mb-1 flex items-center gap-1"><Clock className="w-3 h-3" /> LAST SEEN</div>
           <div className="text-sm font-semibold text-atmo-deep">{formatRelative(station.lastSeen)}</div>
-          <div className="mono text-2xs text-atmo-muted">{new Date(station.lastSeen).toLocaleTimeString('en-IN', { hour12: false })}</div>
+          <div className="mono text-2xs text-atmo-muted">{station.lastSeen ? new Date(station.lastSeen).toLocaleTimeString('en-IN', { hour12: false }) : '—'}</div>
         </div>
         <div className="card-sm px-4 py-3">
           <div className="label mb-1">TEMPERATURE</div>
