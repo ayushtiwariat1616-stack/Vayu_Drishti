@@ -47,8 +47,8 @@ function reducer(state, action) {
       return { ...state, wsConnected: action.payload };
     // Bulk-load historical readings fetched from /sensors/ on boot
     case 'SET_INITIAL_READINGS': {
-      const { telemetry, currentReadings } = action.payload;
-      return { ...state, telemetry, currentReadings };
+      const { telemetry, currentReadings, baselines } = action.payload;
+      return { ...state, telemetry, currentReadings, baselines: baselines || state.baselines };
     }
     case 'NEW_READING': {
       const { stationId, reading } = action.payload;
@@ -159,8 +159,33 @@ export function AppProvider({ children }) {
             currentReadings[sid] = telemetry[sid][telemetry[sid].length - 1];
           });
 
-          dispatch({ type: 'SET_INITIAL_READINGS', payload: { telemetry, currentReadings } });
-          console.log("Sensor readings loaded:", { telemetry, currentReadings });
+          // Compute baselines from the historical data
+          const baselines = {};
+          Object.keys(telemetry).forEach(sid => {
+            const readings = telemetry[sid];
+            if (!readings.length) return;
+
+            const calcStats = (key) => {
+              const vals = readings.map(r => r[key]).filter(v => v != null && isFinite(v));
+              if (!vals.length) return { mean: 0, min: 0, max: 0 };
+              const sum = vals.reduce((a, b) => a + b, 0);
+              const mean = sum / vals.length;
+              return {
+                mean: parseFloat(mean.toFixed(2)),
+                min: parseFloat(Math.min(...vals).toFixed(2)),
+                max: parseFloat(Math.max(...vals).toFixed(2)),
+              };
+            };
+
+            baselines[sid] = {
+              temperature: calcStats('temperature'),
+              pressure: calcStats('pressure'),
+              humidity: calcStats('humidity'),
+            };
+          });
+
+          dispatch({ type: 'SET_INITIAL_READINGS', payload: { telemetry, currentReadings, baselines } });
+          console.log("Sensor readings loaded:", { telemetry, currentReadings, baselines });
         }
 
         // Fetch active anomalies
