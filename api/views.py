@@ -105,9 +105,22 @@ class TelemetryViewSet(viewsets.ModelViewSet):
                 anomaly_analysis = result.get("anomaly_analysis", {})
                 severity = anomaly_analysis.get("severity_level", "NONE")
                 
+                station_obj = telemetry_instance.station
                 if severity != "NONE":
+                    # Reduce health based on severity
+                    if severity == "HIGH":
+                        station_obj.sensor_health = max(0, station_obj.sensor_health - 30)
+                        station_obj.status = "CRITICAL"
+                    elif severity == "MEDIUM":
+                        station_obj.sensor_health = max(0, station_obj.sensor_health - 15)
+                        station_obj.status = "WARNING"
+                    else: # WATCH
+                        station_obj.sensor_health = max(0, station_obj.sensor_health - 5)
+                        station_obj.status = "MONITORING"
+                    station_obj.save()
+
                     anomaly = AnomalyEvent.objects.create(
-                        station=telemetry_instance.station,
+                        station=station_obj,
                         reading=telemetry_instance,
                         anomaly_type=anomaly_analysis.get("detected_root_cause", "UNKNOWN"),
                         severity=severity,
@@ -127,6 +140,31 @@ class TelemetryViewSet(viewsets.ModelViewSet):
                                 'message': anomaly_payload,
                             }
                         )
+                else:
+                    # Gradually recover health if readings are NORMAL
+                    if station_obj.sensor_health < 100:
+                        station_obj.sensor_health = min(100, station_obj.sensor_health + 5)
+                        if station_obj.sensor_health >= 90:
+                            station_obj.status = "HEALTHY"
+                        elif station_obj.sensor_health >= 60:
+                            station_obj.status = "WARNING"
+                        else:
+                            station_obj.status = "CRITICAL"
+                        station_obj.save()
+                        
+                # Also broadcast health updates
+                if channel_layer:
+                    async_to_sync(channel_layer.group_send)(
+                        'telemetry_alerts',
+                        {
+                            'type': 'send_health',
+                            'message': {
+                                'stationId': station_obj.station_id,
+                                'health': station_obj.sensor_health,
+                                'status': station_obj.status
+                            },
+                        }
+                    )
             except Exception as e:
                 import traceback
                 traceback.print_exc()
