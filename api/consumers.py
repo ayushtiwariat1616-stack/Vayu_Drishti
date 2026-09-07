@@ -39,3 +39,12 @@ class TelemetryConsumer(AsyncWebsocketConsumer):
             'stationId': message.get('stationId', ''),
             'data': message
         }))
+
+    # Handler for health updates (from views.py)
+    async def send_health(self, event):
+        message = event['message']
+        await self.send(text_data=json.dumps({
+            'type': 'health',
+            'stationId': message.get('stationId', ''),
+            'data': message
+        }))

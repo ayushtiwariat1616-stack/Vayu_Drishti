@@ -97,8 +97,12 @@ function reducer(state, action) {
       return { ...state, selectedStation: action.payload };
     case 'UPDATE_HEALTH': {
       const { stationId, health } = action.payload;
+      const stations = state.stations.map(s => 
+        s.id === stationId ? { ...s, health: health.health, status: health.status.toLowerCase() } : s
+      );
       return {
         ...state,
+        stations,
         sensorHealth: { ...state.sensorHealth, [stationId]: health },
       };
     }
