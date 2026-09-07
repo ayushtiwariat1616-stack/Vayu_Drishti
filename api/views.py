@@ -104,7 +104,27 @@ class TelemetryViewSet(viewsets.ModelViewSet):
                 # Extract anomaly details
                 anomaly_analysis = result.get("anomaly_analysis", {})
                 severity = anomaly_analysis.get("severity_level", "NONE")
-                
+                detected_cause = anomaly_analysis.get("detected_root_cause", "UNKNOWN")
+                score = anomaly_analysis.get("confidence_score_pct", 0.0) / 100.0
+
+                # --- Rule-Based Guardrails (Catches extreme simulation values) ---
+                if telemetry_instance.temperature >= 150.0:
+                    severity = "HIGH"
+                    detected_cause = "TEMPERATURE SPIKE"
+                    score = 0.99
+                elif telemetry_instance.temperature <= -40.0:
+                    severity = "HIGH"
+                    detected_cause = "FROZEN SENSOR"
+                    score = 0.99
+                elif telemetry_instance.pressure <= 1.0:
+                    severity = "HIGH"
+                    detected_cause = "COMMUNICATION ERROR"
+                    score = 0.99
+                elif telemetry_instance.humidity >= 100.0:
+                    severity = "MEDIUM"
+                    detected_cause = "HUMIDITY SPIKE"
+                    score = 0.95
+
                 station_obj = telemetry_instance.station
                 if severity != "NONE":
                     # Reduce health based on severity
@@ -122,10 +142,10 @@ class TelemetryViewSet(viewsets.ModelViewSet):
                     anomaly = AnomalyEvent.objects.create(
                         station=station_obj,
                         reading=telemetry_instance,
-                        anomaly_type=anomaly_analysis.get("detected_root_cause", "UNKNOWN"),
+                        anomaly_type=detected_cause,
                         severity=severity,
-                        score=anomaly_analysis.get("confidence_score_pct", 0.0) / 100.0,
-                        confidence=anomaly_analysis.get("confidence_score_pct", 0.0) / 100.0,
+                        score=score,
+                        confidence=score,
                         description=result.get("explainability", {}).get("human_readable_reason", ""),
                         status="active",
                     )
