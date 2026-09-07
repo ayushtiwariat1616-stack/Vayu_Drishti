@@ -131,7 +131,7 @@ class VayudrishtyLiveInference:
         result = {
             "status": "success",
             "timestamp": str(history_buffer['timestamp'].iloc[-1]),
-            "station_id": int(history_buffer['station_id'].iloc[-1]),
+            "station_id": str(history_buffer['station_id'].iloc[-1]),
             "anomaly_analysis": {
                 "detected_root_cause": anomaly_type,
                 "confidence_score_pct": round(confidence, 2),

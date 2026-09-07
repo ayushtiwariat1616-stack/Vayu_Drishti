@@ -153,9 +153,9 @@ export function AppProvider({ children }) {
           console.log("Shields down! Stations loaded:", adaptedStations);
         }
 
-        // Fetch existing sensor telemetry (up to last 200 per station)
+        // Fetch existing sensor telemetry (up to last 5000 per station)
         console.log("Fetching sensor readings from Django...");
-        const sensorData = await apiClient.get('/telemetry/?limit=200');
+        const sensorData = await apiClient.get('/telemetry/?limit=5000');
         
         if (sensorData && sensorData.length > 0) {
           // Group readings by station and build telemetry + currentReadings
