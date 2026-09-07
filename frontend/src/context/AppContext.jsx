@@ -100,10 +100,26 @@ function reducer(state, action) {
       const stations = state.stations.map(s => 
         s.id === stationId ? { ...s, health: health.health, status: health.status.toLowerCase() } : s
       );
+      
+      const prevHealth = state.sensorHealth[stationId] || {};
+      const newTrend = prevHealth.trend ? [...prevHealth.trend.slice(1), health.health] : 
+        Array.from({ length: 24 }, (_, i) => Math.max(0, Math.min(100, health.health + Math.sin(i / 2) * 4 + (Math.random() * 4 - 2))));
+
       return {
         ...state,
         stations,
-        sensorHealth: { ...state.sensorHealth, [stationId]: health },
+        sensorHealth: { 
+          ...state.sensorHealth, 
+          [stationId]: {
+            overall: health.health,
+            trend: newTrend,
+            sensors: {
+              temperature: { health: health.health },
+              humidity: { health: Math.min(100, health.health + 2) },
+              pressure: { health: Math.min(100, health.health + 4) }
+            }
+          }
+        },
       };
     }
     default:
