@@ -301,6 +301,20 @@ export function AppProvider({ children }) {
         } catch { /* ignore malformed */ }
       };
 
+      const startPolling = () => {
+        pollingTimer.current = setInterval(async () => {
+          try {
+            const latest = await apiClient.get('/telemetry/?limit=1');
+            if (latest && latest.results && latest.results.length > 0) {
+              const adaptedReading = adaptTelemetry(latest.results[0]);
+              dispatch({ type: 'NEW_READING', payload: { stationId: adaptedReading.stationId, reading: adaptedReading } });
+            }
+          } catch (e) {
+            console.error('Polling failed', e);
+          }
+        }, 5000);
+      };
+
       ws.onclose = () => {
         dispatch({ type: 'SET_WS_CONNECTED', payload: false });
         const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000);
