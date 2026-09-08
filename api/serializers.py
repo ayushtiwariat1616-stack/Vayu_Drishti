@@ -51,9 +51,16 @@ class AnomalyEventSerializer(serializers.ModelSerializer):
 
     def get_normal_reading(self, obj):
         if obj.reading:
+            # Generate a realistic baseline based on the anomaly type
+            normal_temp = obj.reading.temperature
+            if "TEMPERATURE SPIKE" in obj.anomaly_type:
+                normal_temp = min(obj.reading.temperature - 10.0, 35.0)  # Assume normal is around 35 max in a spike
+            elif "FROZEN" in obj.anomaly_type:
+                normal_temp = max(obj.reading.temperature + 10.0, 20.0)
+
             return {
-                "temperature": obj.reading.temperature - 10.0 if obj.severity == "HIGH" else obj.reading.temperature - 2.0,
-                "humidity": obj.reading.humidity - 5.0,
+                "temperature": normal_temp,
+                "humidity": obj.reading.humidity - (5.0 if obj.severity == "HIGH" else 2.0),
                 "pressure": obj.reading.pressure
             }
         return None

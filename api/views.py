@@ -108,7 +108,7 @@ class TelemetryViewSet(viewsets.ModelViewSet):
                 score = anomaly_analysis.get("confidence_score_pct", 0.0) / 100.0
 
                 # --- Rule-Based Guardrails (Catches extreme simulation values) ---
-                if telemetry_instance.temperature >= 150.0:
+                if telemetry_instance.temperature >= 50.0:
                     severity = "HIGH"
                     detected_cause = "TEMPERATURE SPIKE"
                     score = 0.99

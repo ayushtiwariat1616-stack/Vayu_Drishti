@@ -70,8 +70,16 @@ export default function StationDetail() {
               <h1 className="text-2xl font-bold text-atmo-deep">{station.station_id}</h1>
             </div>
             <div className="flex items-center gap-3 mt-1.5 text-sm text-atmo-muted">
-              <MapPin className="w-3.5 h-3.5" />
-              {station.location.name}
+              <a 
+                href={`https://www.google.com/maps?q=${station.location?.lat || 0},${station.location?.lon || 0}`} 
+                target="_blank" 
+                rel="noreferrer"
+                className="flex items-center gap-1 hover:text-teal transition-colors cursor-pointer"
+                title="View on Map"
+              >
+                <MapPin className="w-3.5 h-3.5" />
+                {station.location?.lat ? `${station.location.lat.toFixed(2)}, ${station.location.lon.toFixed(2)}` : "View Map"}
+              </a>
               <span className="text-atmo-border">·</span>
               <Cpu className="w-3.5 h-3.5" />
               {station.device}
