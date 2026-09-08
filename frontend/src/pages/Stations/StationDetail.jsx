@@ -9,7 +9,7 @@ function HealthTrend({ data }) {
   return (
     <ResponsiveContainer width="100%" height={60}>
       <LineChart data={data.map((v, i) => ({ i, v }))}>
-        <Line type="monotone" dataKey="v" stroke="#4caf8a" strokeWidth={2} dot={false} isAnimationActive />
+        <Line type="monotone" dataKey="v" stroke="rgb(var(--color-mint))" strokeWidth={2} dot={false} isAnimationActive />
       </LineChart>
     </ResponsiveContainer>
   );
@@ -153,7 +153,7 @@ export default function StationDetail() {
                     <div className="h-full rounded-full transition-all duration-700"
                       style={{
                         width: `${data.health}%`,
-                        background: data.health >= 85 ? '#4caf8a' : data.health >= 65 ? '#d97706' : '#c0392b'
+                        background: data.health >= 85 ? 'rgb(var(--color-mint))' : data.health >= 65 ? 'rgb(var(--color-amber))' : 'rgb(var(--color-critical))'
                       }}
                     />
                   </div>

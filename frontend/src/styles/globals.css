@@ -6,6 +6,38 @@
 
 /* ─── Base ─────────────────────────────────────────────── */
 @layer base {
+  :root {
+    --color-atmo-bg: 5 11 20;
+    --color-atmo-surface: 10 20 35;
+    --color-atmo-mid: 19 36 57;
+    --color-atmo-border: 28 55 84;
+    --color-atmo-deep: 224 242 254;
+    --color-atmo-muted: 92 132 156;
+
+    --color-sky-pale: 224 242 254;
+    --color-sky: 56 189 248;
+    --color-sky-deep: 2 132 199;
+
+    --color-teal-light: 94 234 212;
+    --color-teal: 20 184 166;
+    --color-teal-dark: 15 118 110;
+
+    --color-mint-light: 134 239 172;
+    --color-mint: 34 197 94;
+    --color-mint-dark: 22 101 52;
+
+    --color-amber-light: 254 240 138;
+    --color-amber: 234 179 8;
+    --color-amber-dark: 133 77 14;
+
+    --color-critical-light: 254 202 202;
+    --color-critical: 239 68 68;
+    --color-critical-dark: 153 27 27;
+    
+    --glass-bg: 10, 20, 35;
+    --shadow-color: 0, 0, 0;
+  }
+
   *, *::before, *::after {
     box-sizing: border-box;
   }
@@ -45,14 +77,14 @@
 @layer components {
   /* Glass card */
   .glass {
-    background: rgba(248, 250, 251, 0.72);
+    background: rgba(var(--glass-bg, 248, 250, 251), 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     @apply border border-atmo-border/60 rounded-xl shadow-glass;
   }
 
   .glass-sm {
-    background: rgba(248, 250, 251, 0.65);
+    background: rgba(var(--glass-bg, 248, 250, 251), 0.65);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     @apply border border-atmo-border/50 rounded-lg shadow-glass;
@@ -346,13 +378,13 @@
 .recharts-default-tooltip {
   border-radius: 8px !important;
   border: 1px solid theme('colors.atmo.border') !important;
-  background: rgba(248,250,251,0.95) !important;
+  background: rgba(var(--glass-bg, 248, 250, 251), 0.95) !important;
   backdrop-filter: blur(12px) !important;
-  box-shadow: 0 4px 24px rgba(26,46,53,0.12) !important;
+  box-shadow: 0 4px 24px rgba(var(--shadow-color, 26, 46, 53), 0.12) !important;
 }
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
-  stroke: rgba(42,122,123,0.08) !important;
+  stroke: theme('colors.atmo.border') !important;
 }
 
 /* ─── Custom range input ────────────────────────────────── */

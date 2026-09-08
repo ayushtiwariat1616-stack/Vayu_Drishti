@@ -4,7 +4,7 @@ import { Radio, HeartPulse, Clock, ArrowRight, AlertTriangle } from 'lucide-reac
 import { formatRelative } from '../../utils/formatters';
 
 function HealthBar({ value }) {
-  const color = value >= 85 ? '#4caf8a' : value >= 65 ? '#d97706' : '#c0392b';
+  const color = value >= 85 ? 'rgb(var(--color-mint))' : value >= 65 ? 'rgb(var(--color-amber))' : 'rgb(var(--color-critical))';
   return (
     <div className="flex items-center gap-2">
       <div className="flex-1 h-1.5 bg-atmo-mid rounded-full overflow-hidden">

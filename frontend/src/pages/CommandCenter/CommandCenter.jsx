@@ -356,7 +356,7 @@ export default function CommandCenter() {
           value={cr.temperature ?? 0}
           unit="°C"
           icon={Activity}
-          color="#2a7a7b"
+          color="rgb(var(--color-teal))"
           dataKey="temperature"
           readings={td}
           baseline={bl.temperature}
@@ -368,7 +368,7 @@ export default function CommandCenter() {
           value={cr.pressure ?? 0}
           unit=" hPa"
           icon={Activity}
-          color="#5a9db5"
+          color="rgb(var(--color-sky))"
           dataKey="pressure"
           readings={td}
           baseline={bl.pressure}
@@ -380,7 +380,7 @@ export default function CommandCenter() {
           value={cr.humidity ?? 0}
           unit="%"
           icon={Activity}
-          color="#4caf8a"
+          color="rgb(var(--color-mint))"
           dataKey="humidity"
           readings={td}
           baseline={bl.humidity}

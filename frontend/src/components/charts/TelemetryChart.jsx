@@ -22,10 +22,10 @@ const TIMEFRAMES = [
 ];
 
 const SERIES_CONFIG = {
-  temperature: { key: 'temperature', label: 'Temperature', unit: '°C', color: '#2a7a7b',  dot: '#2a7a7b' },
-  pressure:    { key: 'pressure',    label: 'Pressure',    unit: ' hPa', color: '#5a9db5', dot: '#5a9db5' },
-  humidity:    { key: 'humidity',    label: 'Humidity',    unit: '%',  color: '#4caf8a',  dot: '#4caf8a' },
-  anomalyScore:{ key: 'anomalyScore',label: 'Anomaly Score', unit: '', color: '#d97706', dot: '#d97706' },
+  temperature: { key: 'temperature', label: 'Temperature', unit: '°C', color: 'rgb(var(--color-teal))',  dot: 'rgb(var(--color-teal))' },
+  pressure:    { key: 'pressure',    label: 'Pressure',    unit: ' hPa', color: 'rgb(var(--color-sky))', dot: 'rgb(var(--color-sky))' },
+  humidity:    { key: 'humidity',    label: 'Humidity',    unit: '%',  color: 'rgb(var(--color-mint))',  dot: 'rgb(var(--color-mint))' },
+  anomalyScore:{ key: 'anomalyScore',label: 'Anomaly Score', unit: '', color: 'rgb(var(--color-amber))', dot: 'rgb(var(--color-amber))' },
 };
 
 const MULTIVARIATE_SERIES = ['temperature', 'pressure', 'humidity'];
@@ -83,9 +83,9 @@ function AnomalyDot({ cx, cy, anomaly, onClick }) {
   if (!cx || !cy) return null;
   return (
     <g className="cursor-pointer" onClick={() => onClick?.(anomaly.id)}>
-      <circle cx={cx} cy={cy - 12} r={7} fill="#c0392b" opacity={0.9} />
+      <circle cx={cx} cy={cy - 12} r={7} fill="rgb(var(--color-critical))" opacity={0.9} />
       <text x={cx} y={cy - 8} textAnchor="middle" fill="white" fontSize="8" fontWeight="bold">!</text>
-      <line x1={cx} y1={cy - 5} x2={cx} y2={cy} stroke="#c0392b" strokeWidth={1.5} strokeDasharray="3,2" />
+      <line x1={cx} y1={cy - 5} x2={cx} y2={cy} stroke="rgb(var(--color-critical))" strokeWidth={1.5} strokeDasharray="3,2" />
     </g>
   );
 }
@@ -255,26 +255,26 @@ export default function TelemetryChart({
         >
           <defs>
             <linearGradient id="areaGrad-temp" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%"  stopColor="#2a7a7b" stopOpacity={0.12} />
-              <stop offset="95%" stopColor="#2a7a7b" stopOpacity={0} />
+              <stop offset="5%"  stopColor="rgb(var(--color-teal))" stopOpacity={0.12} />
+              <stop offset="95%" stopColor="rgb(var(--color-teal))" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="areaGrad-pres" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%"  stopColor="#5a9db5" stopOpacity={0.10} />
-              <stop offset="95%" stopColor="#5a9db5" stopOpacity={0} />
+              <stop offset="5%"  stopColor="rgb(var(--color-sky))" stopOpacity={0.10} />
+              <stop offset="95%" stopColor="rgb(var(--color-sky))" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="areaGrad-hum" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%"  stopColor="#4caf8a" stopOpacity={0.10} />
-              <stop offset="95%" stopColor="#4caf8a" stopOpacity={0} />
+              <stop offset="5%"  stopColor="rgb(var(--color-mint))" stopOpacity={0.10} />
+              <stop offset="95%" stopColor="rgb(var(--color-mint))" stopOpacity={0} />
             </linearGradient>
           </defs>
 
-          <CartesianGrid strokeDasharray="4 4" stroke="rgba(42,122,123,0.08)" />
+          <CartesianGrid strokeDasharray="4 4" stroke="rgba(var(--color-teal), 0.08)" />
 
           <XAxis
             dataKey="timestamp"
             tickFormatter={formatTsShort}
-            tick={{ fontSize: 10, fill: '#5c7a82', fontFamily: 'JetBrains Mono' }}
-            axisLine={{ stroke: 'rgba(42,122,123,0.15)' }}
+            tick={{ fontSize: 10, fill: 'rgb(var(--color-atmo-muted))', fontFamily: 'JetBrains Mono' }}
+            axisLine={{ stroke: 'rgba(var(--color-teal), 0.15)' }}
             tickLine={false}
             interval="preserveStartEnd"
           />
@@ -282,7 +282,7 @@ export default function TelemetryChart({
           {chartMode !== 'multivariate' ? (
             <YAxis
               domain={yDomain}
-              tick={{ fontSize: 10, fill: '#5c7a82', fontFamily: 'JetBrains Mono' }}
+              tick={{ fontSize: 10, fill: 'rgb(var(--color-atmo-muted))', fontFamily: 'JetBrains Mono' }}
               axisLine={false}
               tickLine={false}
               width={48}
@@ -290,14 +290,14 @@ export default function TelemetryChart({
             />
           ) : (
             <>
-              <YAxis yAxisId="left"  tick={{ fontSize: 9, fill: '#5c7a82' }} axisLine={false} tickLine={false} width={40} />
-              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 9, fill: '#5c7a82' }} axisLine={false} tickLine={false} width={40} />
+              <YAxis yAxisId="left"  tick={{ fontSize: 9, fill: 'rgb(var(--color-atmo-muted))' }} axisLine={false} tickLine={false} width={40} />
+              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 9, fill: 'rgb(var(--color-atmo-muted))' }} axisLine={false} tickLine={false} width={40} />
             </>
           )}
 
           <Tooltip
             content={<ChartTooltip anomalyMap={anomalyMap} />}
-            cursor={{ stroke: 'rgba(42,122,123,0.3)', strokeWidth: 1.5, strokeDasharray: '4 4' }}
+            cursor={{ stroke: 'rgba(var(--color-teal), 0.3)', strokeWidth: 1.5, strokeDasharray: '4 4' }}
           />
 
           {/* Zoom selection area */}
@@ -305,8 +305,8 @@ export default function TelemetryChart({
             <ReferenceArea
               x1={new Date(Math.min(refAreaLeft, refAreaRight)).toISOString()}
               x2={new Date(Math.max(refAreaLeft, refAreaRight)).toISOString()}
-              fill="rgba(42,122,123,0.12)"
-              stroke="rgba(42,122,123,0.4)"
+              fill="rgba(var(--color-teal), 0.12)"
+              stroke="rgba(var(--color-teal), 0.4)"
             />
           )}
 
@@ -315,7 +315,7 @@ export default function TelemetryChart({
             <ReferenceLine
               key={ts}
               x={ts}
-              stroke={anomaly.severity === 'HIGH' ? '#c0392b' : anomaly.severity === 'MEDIUM' ? '#d97706' : '#5a9db5'}
+              stroke={anomaly.severity === 'HIGH' ? 'rgb(var(--color-critical))' : anomaly.severity === 'MEDIUM' ? 'rgb(var(--color-amber))' : 'rgb(var(--color-sky))'}
               strokeWidth={1.5}
               strokeDasharray="4 3"
               opacity={0.6}
@@ -326,22 +326,22 @@ export default function TelemetryChart({
           {chartMode === 'multivariate' ? (
             <>
               {mvSeries.temperature && (
-                <Area yAxisId="left" type="monotone" dataKey="temperature" stroke="#2a7a7b" strokeWidth={2}
-                  fill="url(#areaGrad-temp)" dot={false} activeDot={{ r: 4, fill: '#2a7a7b' }}
+                <Area yAxisId="left" type="monotone" dataKey="temperature" stroke="rgb(var(--color-teal))" strokeWidth={2}
+                  fill="url(#areaGrad-temp)" dot={false} activeDot={{ r: 4, fill: 'rgb(var(--color-teal))' }}
                   animationDuration={400} isAnimationActive name="Temperature" />
               )}
               {mvSeries.pressure && (
-                <Line yAxisId="right" type="monotone" dataKey="pressure" stroke="#5a9db5" strokeWidth={1.5}
-                  dot={false} activeDot={{ r: 3, fill: '#5a9db5' }}
+                <Line yAxisId="right" type="monotone" dataKey="pressure" stroke="rgb(var(--color-sky))" strokeWidth={1.5}
+                  dot={false} activeDot={{ r: 3, fill: 'rgb(var(--color-sky))' }}
                   animationDuration={400} strokeDasharray="6 3" name="Pressure" />
               )}
               {mvSeries.humidity && (
-                <Line yAxisId="left" type="monotone" dataKey="humidity" stroke="#4caf8a" strokeWidth={1.5}
-                  dot={false} activeDot={{ r: 3, fill: '#4caf8a' }}
+                <Line yAxisId="left" type="monotone" dataKey="humidity" stroke="rgb(var(--color-mint))" strokeWidth={1.5}
+                  dot={false} activeDot={{ r: 3, fill: 'rgb(var(--color-mint))' }}
                   animationDuration={400} strokeDasharray="3 2" name="Humidity" />
               )}
               {mvSeries.anomalyScore && (
-                <Line yAxisId="right" type="monotone" dataKey="anomalyScore" stroke="#d97706" strokeWidth={1}
+                <Line yAxisId="right" type="monotone" dataKey="anomalyScore" stroke="rgb(var(--color-amber))" strokeWidth={1}
                   dot={false} animationDuration={400} name="Anomaly Score" />
               )}
             </>
@@ -350,7 +350,7 @@ export default function TelemetryChart({
               <Area
                 type="monotone"
                 dataKey={activeSensor}
-                stroke={SERIES_CONFIG[activeSensor]?.color ?? '#2a7a7b'}
+                stroke={SERIES_CONFIG[activeSensor]?.color ?? 'rgb(var(--color-teal))'}
                 strokeWidth={2.2}
                 fill={`url(#areaGrad-temp)`}
                 dot={AnomalyDotRenderer}
@@ -360,7 +360,7 @@ export default function TelemetryChart({
               />
               {overlays.anomalyScore && (
                 <Line type="monotone" dataKey="anomalyScore"
-                  stroke="#d97706" strokeWidth={1.2} dot={false}
+                  stroke="rgb(var(--color-amber))" strokeWidth={1.2} dot={false}
                   strokeDasharray="4 3" animationDuration={300} />
               )}
             </>
@@ -513,52 +513,52 @@ export default function TelemetryChart({
               >
                 <defs>
                   <linearGradient id="areaGrad-temp-max" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#2a7a7b" stopOpacity={0.15} />
-                    <stop offset="95%" stopColor="#2a7a7b" stopOpacity={0} />
+                    <stop offset="5%"  stopColor="rgb(var(--color-teal))" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="rgb(var(--color-teal))" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="4 4" stroke="rgba(42,122,123,0.08)" />
+                <CartesianGrid strokeDasharray="4 4" stroke="rgba(var(--color-teal), 0.08)" />
                 <XAxis dataKey="timestamp" tickFormatter={formatTs}
-                  tick={{ fontSize: 11, fill: '#5c7a82', fontFamily: 'JetBrains Mono' }}
-                  axisLine={{ stroke: 'rgba(42,122,123,0.15)' }} tickLine={false} />
+                  tick={{ fontSize: 11, fill: 'rgb(var(--color-atmo-muted))', fontFamily: 'JetBrains Mono' }}
+                  axisLine={{ stroke: 'rgba(var(--color-teal), 0.15)' }} tickLine={false} />
                 {chartMode !== 'multivariate' ? (
                   <YAxis domain={yDomain}
-                    tick={{ fontSize: 11, fill: '#5c7a82', fontFamily: 'JetBrains Mono' }}
+                    tick={{ fontSize: 11, fill: 'rgb(var(--color-atmo-muted))', fontFamily: 'JetBrains Mono' }}
                     axisLine={false} tickLine={false} width={55} />
                 ) : (
                   <>
-                    <YAxis yAxisId="left" tick={{ fontSize: 10, fill: '#5c7a82' }} axisLine={false} tickLine={false} width={45} />
-                    <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: '#5c7a82' }} axisLine={false} tickLine={false} width={45} />
+                    <YAxis yAxisId="left" tick={{ fontSize: 10, fill: 'rgb(var(--color-atmo-muted))' }} axisLine={false} tickLine={false} width={45} />
+                    <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: 'rgb(var(--color-atmo-muted))' }} axisLine={false} tickLine={false} width={45} />
                   </>
                 )}
                 <Tooltip content={<ChartTooltip anomalyMap={anomalyMap} />}
-                  cursor={{ stroke: 'rgba(42,122,123,0.3)', strokeWidth: 1.5, strokeDasharray: '4 4' }} />
+                  cursor={{ stroke: 'rgba(var(--color-teal), 0.3)', strokeWidth: 1.5, strokeDasharray: '4 4' }} />
                 {Object.entries(anomalyMap).map(([ts, anomaly]) => (
                   <ReferenceLine key={ts} x={ts}
-                    stroke={anomaly.severity === 'HIGH' ? '#c0392b' : '#d97706'}
+                    stroke={anomaly.severity === 'HIGH' ? 'rgb(var(--color-critical))' : 'rgb(var(--color-amber))'}
                     strokeWidth={1.5} strokeDasharray="4 3" opacity={0.6} />
                 ))}
                 {refAreaLeft && refAreaRight && (
                   <ReferenceArea
                     x1={new Date(Math.min(refAreaLeft, refAreaRight)).toISOString()}
                     x2={new Date(Math.max(refAreaLeft, refAreaRight)).toISOString()}
-                    fill="rgba(42,122,123,0.12)" stroke="rgba(42,122,123,0.4)" />
+                    fill="rgba(var(--color-teal), 0.12)" stroke="rgba(var(--color-teal), 0.4)" />
                 )}
                 {chartMode === 'multivariate' ? (
                   <>
-                    {mvSeries.temperature && <Area yAxisId="left" type="monotone" dataKey="temperature" stroke="#2a7a7b" strokeWidth={2.5} fill="url(#areaGrad-temp-max)" dot={false} activeDot={{ r: 5 }} animationDuration={400} />}
-                    {mvSeries.pressure    && <Line yAxisId="right" type="monotone" dataKey="pressure"    stroke="#5a9db5" strokeWidth={2}   dot={false} strokeDasharray="6 3" animationDuration={400} />}
-                    {mvSeries.humidity    && <Line yAxisId="left"  type="monotone" dataKey="humidity"    stroke="#4caf8a" strokeWidth={2}   dot={false} strokeDasharray="3 2" animationDuration={400} />}
-                    {mvSeries.anomalyScore && <Line yAxisId="right" type="monotone" dataKey="anomalyScore" stroke="#d97706" strokeWidth={1.5} dot={false} animationDuration={400} />}
+                    {mvSeries.temperature && <Area yAxisId="left" type="monotone" dataKey="temperature" stroke="rgb(var(--color-teal))" strokeWidth={2.5} fill="url(#areaGrad-temp-max)" dot={false} activeDot={{ r: 5 }} animationDuration={400} />}
+                    {mvSeries.pressure    && <Line yAxisId="right" type="monotone" dataKey="pressure"    stroke="rgb(var(--color-sky))" strokeWidth={2}   dot={false} strokeDasharray="6 3" animationDuration={400} />}
+                    {mvSeries.humidity    && <Line yAxisId="left"  type="monotone" dataKey="humidity"    stroke="rgb(var(--color-mint))" strokeWidth={2}   dot={false} strokeDasharray="3 2" animationDuration={400} />}
+                    {mvSeries.anomalyScore && <Line yAxisId="right" type="monotone" dataKey="anomalyScore" stroke="rgb(var(--color-amber))" strokeWidth={1.5} dot={false} animationDuration={400} />}
                   </>
                 ) : (
                   <Area type="monotone" dataKey={activeSensor}
-                    stroke={SERIES_CONFIG[activeSensor]?.color ?? '#2a7a7b'}
+                    stroke={SERIES_CONFIG[activeSensor]?.color ?? 'rgb(var(--color-teal))'}
                     strokeWidth={2.5} fill="url(#areaGrad-temp-max)"
                     dot={AnomalyDotRenderer} activeDot={{ r: 6 }} animationDuration={300} />
                 )}
-                <Brush dataKey="timestamp" height={24} stroke="rgba(42,122,123,0.2)"
-                  fill="rgba(238,243,242,0.8)" travellerWidth={6}
+                <Brush dataKey="timestamp" height={24} stroke="rgba(var(--color-teal), 0.2)"
+                  fill="rgba(var(--color-atmo-bg), 0.8)" travellerWidth={6}
                   tickFormatter={formatTsShort} />
               </ComposedChart>
             </ResponsiveContainer>

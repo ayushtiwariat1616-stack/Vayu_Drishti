@@ -1,53 +1,47 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        // Atmospheric base
         atmo: {
-          bg:      '#eef3f2',   // Soft atmospheric mint-grey background
-          surface: '#f8fafb',   // Cloud white surface
-          mid:     '#e2eaec',   // Mist grey
-          border:  '#c8d8db',   // Pale atmospheric border
-          deep:    '#1a2e35',   // Deep atmospheric text
-          muted:   '#5c7a82',   // Muted label text
+          bg:      'rgb(var(--color-atmo-bg) / <alpha-value>)',
+          surface: 'rgb(var(--color-atmo-surface) / <alpha-value>)',
+          mid:     'rgb(var(--color-atmo-mid) / <alpha-value>)',
+          border:  'rgb(var(--color-atmo-border) / <alpha-value>)',
+          deep:    'rgb(var(--color-atmo-deep) / <alpha-value>)',
+          muted:   'rgb(var(--color-atmo-muted) / <alpha-value>)',
         },
-        // Sky blues
         sky: {
-          pale:    '#daeef5',   // Pale sky tint
-          DEFAULT: '#5a9db5',   // Sky blue
-          deep:    '#2a6f8a',   // Deep sky
+          pale:    'rgb(var(--color-sky-pale) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--color-sky) / <alpha-value>)',
+          deep:    'rgb(var(--color-sky-deep) / <alpha-value>)',
         },
-        // Teal (primary accent)
         teal: {
-          light:   '#4da8a9',   // Light teal
-          DEFAULT: '#2a7a7b',   // Deep atmospheric teal
-          dark:    '#1a5557',   // Darkest teal
+          light:   'rgb(var(--color-teal-light) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--color-teal) / <alpha-value>)',
+          dark:    'rgb(var(--color-teal-dark) / <alpha-value>)',
         },
-        // Mint / healthy green
         mint: {
-          light:   '#a8dbc9',   // Light mint
-          DEFAULT: '#4caf8a',   // Natural green
-          dark:    '#2d7a5f',   // Dark green
+          light:   'rgb(var(--color-mint-light) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--color-mint) / <alpha-value>)',
+          dark:    'rgb(var(--color-mint-dark) / <alpha-value>)',
         },
-        // Warning amber
         amber: {
-          light:   '#fef3c7',
-          DEFAULT: '#d97706',
-          dark:    '#92400e',
+          light:   'rgb(var(--color-amber-light) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--color-amber) / <alpha-value>)',
+          dark:    'rgb(var(--color-amber-dark) / <alpha-value>)',
         },
-        // Critical red
         critical: {
-          light:   '#fde8e8',
-          DEFAULT: '#c0392b',
-          dark:    '#7b1c14',
+          light:   'rgb(var(--color-critical-light) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--color-critical) / <alpha-value>)',
+          dark:    'rgb(var(--color-critical-dark) / <alpha-value>)',
         },
-        // Anomaly score purple-ish muted
         score: {
-          low:     '#4caf8a',
-          medium:  '#d97706',
-          high:    '#c0392b',
+          low:     'rgb(var(--color-mint) / <alpha-value>)',
+          medium:  'rgb(var(--color-amber) / <alpha-value>)',
+          high:    'rgb(var(--color-critical) / <alpha-value>)',
         },
       },
       fontFamily: {
@@ -73,14 +67,14 @@ export default {
         wide:   '0.06em',
       },
       boxShadow: {
-        glass:    '0 4px 24px 0 rgba(42,122,123,0.06), 0 1px 4px 0 rgba(26,46,53,0.04)',
-        'glass-md': '0 8px 32px 0 rgba(42,122,123,0.1), 0 2px 8px 0 rgba(26,46,53,0.06)',
-        'glass-lg': '0 16px 48px 0 rgba(42,122,123,0.14), 0 4px 16px 0 rgba(26,46,53,0.08)',
-        glow:     '0 0 12px 2px rgba(76,175,138,0.25)',
-        'glow-amber': '0 0 12px 2px rgba(217,119,6,0.3)',
-        'glow-red':   '0 0 12px 2px rgba(192,57,43,0.3)',
-        'glow-teal':  '0 0 16px 4px rgba(42,122,123,0.2)',
-        inner:    'inset 0 1px 3px 0 rgba(26,46,53,0.08)',
+        glass:    '0 4px 24px 0 rgba(0,0,0,0.4), 0 1px 4px 0 rgba(20,184,166,0.15)',
+        'glass-md': '0 8px 32px 0 rgba(0,0,0,0.5), 0 2px 8px 0 rgba(20,184,166,0.2)',
+        'glass-lg': '0 16px 48px 0 rgba(0,0,0,0.6), 0 4px 16px 0 rgba(20,184,166,0.25)',
+        glow:     '0 0 12px 2px rgba(34,197,94,0.4)',
+        'glow-amber': '0 0 12px 2px rgba(234,179,8,0.4)',
+        'glow-red':   '0 0 15px 4px rgba(239,68,68,0.5)',
+        'glow-teal':  '0 0 16px 4px rgba(20,184,166,0.4)',
+        inner:    'inset 0 1px 3px 0 rgba(0,0,0,0.5)',
       },
       backdropBlur: {
         xs: '2px',

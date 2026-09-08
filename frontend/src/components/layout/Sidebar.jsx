@@ -1,7 +1,7 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Home, Activity, AlertTriangle, Radio, Clock3, Zap,
-  Cloud, Wifi, WifiOff, Database, Cpu, Server,
+  Cloud, Wifi, WifiOff, Database, Cpu, Server
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 

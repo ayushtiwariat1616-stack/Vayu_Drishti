@@ -11,7 +11,7 @@ function ScoreArc({ score }) {
   const radius  = 52;
   const circ    = 2 * Math.PI * radius;
   const offset  = circ - (circ * pct) / 100;
-  const color   = pct >= 75 ? '#c0392b' : pct >= 50 ? '#d97706' : '#5a9db5';
+  const color   = pct >= 75 ? 'rgb(var(--color-critical))' : pct >= 50 ? 'rgb(var(--color-amber))' : 'rgb(var(--color-sky))';
   const [anim, setAnim] = useState(circ);
   useEffect(() => {
     const t = setTimeout(() => setAnim(offset), 100);
@@ -22,7 +22,7 @@ function ScoreArc({ score }) {
     <div className="flex flex-col items-center gap-3">
       <div className="relative w-36 h-36">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(42,122,123,0.1)" strokeWidth="8" />
+          <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(var(--color-teal), 0.1)" strokeWidth="8" />
           <circle
             cx="60" cy="60" r={radius} fill="none"
             stroke={color} strokeWidth="8"
@@ -48,7 +48,7 @@ function DetectionBar({ label, value, delay = 0 }) {
     const t = setTimeout(() => setW(value * 100), delay + 200);
     return () => clearTimeout(t);
   }, [value, delay]);
-  const color = value >= 0.75 ? '#c0392b' : value >= 0.5 ? '#d97706' : '#5a9db5';
+  const color = value >= 0.75 ? 'rgb(var(--color-critical))' : value >= 0.5 ? 'rgb(var(--color-amber))' : 'rgb(var(--color-sky))';
 
   return (
     <div className="flex items-center gap-3">
@@ -263,7 +263,7 @@ export default function AnomalyDetail() {
             <div className="flex items-center justify-between">
               <span className="label">ENSEMBLE SCORE</span>
               <span className="mono font-bold text-lg"
-                style={{ color: ensembleScore >= 0.75 ? '#c0392b' : ensembleScore >= 0.5 ? '#d97706' : '#5a9db5' }}>
+                style={{ color: ensembleScore >= 0.75 ? 'rgb(var(--color-critical))' : ensembleScore >= 0.5 ? 'rgb(var(--color-amber))' : 'rgb(var(--color-sky))' }}>
                 {Math.round(ensembleScore * 100)}%
               </span>
             </div>
@@ -272,7 +272,7 @@ export default function AnomalyDetail() {
                 className="h-full rounded-full transition-all duration-1000"
                 style={{
                   width: `${Math.round(ensembleScore * 100)}%`,
-                  background: ensembleScore >= 0.75 ? '#c0392b' : '#d97706',
+                  background: ensembleScore >= 0.75 ? 'rgb(var(--color-critical))' : 'rgb(var(--color-amber))',
                   transitionDelay: '800ms',
                 }}
               />
