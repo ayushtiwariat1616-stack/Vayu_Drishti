@@ -152,7 +152,7 @@ MAILERS = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://vayu-drishti-h8xr.onrender.com",
-    "https://vayu-drishti-chi.vercel.app",
+    "https://vayu-drishti-chi.vercel.app/",
 ]
 
 REST_FRAMEWORK = {
