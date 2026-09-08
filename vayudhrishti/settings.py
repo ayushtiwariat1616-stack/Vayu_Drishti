@@ -93,7 +93,7 @@ ASGI_APPLICATION = 'vayudhrishti.asgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('postgresql://skyguard_admin:a21iBkuXc0eKk8RKsQPdFiTTteVuW7Sn@dpg-dad5ghqfngtc73fu4ta0-a.virginia-postgres.render.com/vayudhrishti_db', 'sqlite:///db.sqlite3'),
+        default=os.environ.get('DATABASE_URL', 'postgresql://skyguard_admin:a21iBkuXc0eKk8RKsQPdFiTTteVuW7Sn@dpg-dad5ghqfngtc73fu4ta0-a.virginia-postgres.render.com/vayudhrishti_db'),
         conn_max_age=600,
         conn_health_checks=True,
     )
@@ -152,7 +152,7 @@ MAILERS = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://vayu-drishti-h8xr.onrender.com",
-    "https://vayu-drishti-chi.vercel.app/",
+    "https://vayu-drishti-chi.vercel.app",
 ]
 
 REST_FRAMEWORK = {
