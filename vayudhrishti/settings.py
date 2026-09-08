@@ -88,7 +88,7 @@ ASGI_APPLICATION = 'vayudhrishti.asgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL', 'postgresql://skyguard_admin:a21iBkuXc0eKk8RKsQPdFiTTteVuW7Sn@dpg-dad5ghqfngtc73fu4ta0-a.virginia-postgres.render.com/vayudhrishti_db'),
-        conn_max_age=600,
+        conn_max_age=0,
         conn_health_checks=True,
     )
 }
