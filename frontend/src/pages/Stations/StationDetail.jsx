@@ -3,6 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { ArrowLeft, HeartPulse, Clock, Cpu, MapPin, AlertTriangle, ChevronRight } from 'lucide-react';
 import { formatRelative, formatTimestamp } from '../../utils/formatters';
 import TelemetryChart from '../../components/charts/TelemetryChart';
+import StationMap from '../../components/ui/StationMap';
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
 
 function HealthTrend({ data }) {
@@ -70,16 +71,8 @@ export default function StationDetail() {
               <h1 className="text-2xl font-bold text-atmo-deep">{station.station_id}</h1>
             </div>
             <div className="flex items-center gap-3 mt-1.5 text-sm text-atmo-muted">
-              <a 
-                href={`https://www.google.com/maps?q=${station.location?.lat || 0},${station.location?.lon || 0}`} 
-                target="_blank" 
-                rel="noreferrer"
-                className="flex items-center gap-1 hover:text-teal transition-colors cursor-pointer"
-                title="View on Map"
-              >
-                <MapPin className="w-3.5 h-3.5" />
-                {station.location?.lat ? `${station.location.lat.toFixed(2)}, ${station.location.lon.toFixed(2)}` : "View Map"}
-              </a>
+              <MapPin className="w-3.5 h-3.5" />
+              {station.location?.lat ? `${station.location.lat.toFixed(2)}, ${station.location.lon.toFixed(2)}` : "Location Unknown"}
               <span className="text-atmo-border">·</span>
               <Cpu className="w-3.5 h-3.5" />
               {station.device}
@@ -120,8 +113,18 @@ export default function StationDetail() {
         </div>
       </div>
 
-      {/* Health trend + anomaly summary */}
-      <div className="grid grid-cols-3 gap-4 animate-in-up stagger-2">
+      {/* Map, Health trend + anomaly summary */}
+      <div className="grid grid-cols-4 gap-4 animate-in-up stagger-2">
+        {/* Map */}
+        <div className="glass p-4 flex flex-col">
+          <div className="label mb-2 flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-teal" /> LOCATION MAP
+          </div>
+          <div className="flex-1 min-h-[140px] rounded-lg overflow-hidden border border-atmo-border/30">
+            <StationMap stations={station} center={[station.location?.lat || 20.5937, station.location?.lon || 78.9629]} zoom={16} className="w-full h-full" />
+          </div>
+        </div>
+
         {/* Health trend */}
         <div className="glass p-4">
           <div className="label mb-2 flex items-center gap-1.5">

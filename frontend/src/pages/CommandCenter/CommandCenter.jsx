@@ -14,6 +14,8 @@ import LiveEventStream from "../../components/system/LiveEventStream";
 import { formatRelative } from "../../utils/formatters";
 import { useNavigate } from "react-router-dom";
 import TelemetryRadar from "../../components/ui/TelemetryRadar"; // Adjust path if necessary
+import StationMap from "../../components/ui/StationMap";
+import { MapPin } from "lucide-react";
 
 // Animated number component
 function AnimatedNumber({ value, decimals = 1, className = "" }) {
@@ -389,8 +391,18 @@ export default function CommandCenter() {
         />
       </div>
 
+      {/* Network Map */}
+      <div className="glass p-4 animate-in-up stagger-3">
+        <div className="label mb-3 flex items-center gap-1.5">
+          <MapPin className="w-3.5 h-3.5 text-teal" /> GLOBAL TELEMETRY NETWORK
+        </div>
+        <div className="w-full h-80 rounded-lg overflow-hidden border border-atmo-border/30">
+          <StationMap stations={stations} center={[20.5937, 78.9629]} zoom={4} className="w-full h-full" />
+        </div>
+      </div>
+
       {/* Bottom row: stations + events */}
-      <div className="grid grid-cols-5 gap-4 animate-in-up stagger-3">
+      <div className="grid grid-cols-5 gap-4 animate-in-up stagger-4">
         {/* Station overview */}
         <div className="col-span-3 glass p-4">
           <div className="label mb-3 flex items-center gap-1.5">
