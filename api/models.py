@@ -13,6 +13,9 @@ class Station(models.Model):
     sensor_health = models.IntegerField(default=100)
     status = models.CharField(max_length=20, default='HEALTHY')
     last_seen = models.DateTimeField(auto_now=True)
+    maintainer_1_phone = models.CharField(max_length=20, blank=True, null=True)
+    maintainer_2_phone = models.CharField(max_length=20, blank=True, null=True)
+    maintainer_3_phone = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return self.station_id
@@ -83,3 +86,13 @@ class AnomalyEvent(models.Model):
     
     def __str__(self):
         return f"🚨 ANOMALY at {self.station.station_id}: {self.description}"
+
+import threading
+from .notifications import send_anomaly_sms
+
+@receiver(post_save, sender=AnomalyEvent)
+def trigger_anomaly_sms(sender, instance, created, **kwargs):
+    if created and instance.status == 'active':
+        # Run in a background thread to avoid blocking the web request
+        thread = threading.Thread(target=send_anomaly_sms, args=(instance,))
+        thread.start()
