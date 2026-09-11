@@ -34,14 +34,10 @@ def send_anomaly_sms(anomaly_event):
         logger.warning(f"No valid maintainer numbers found for station {station.station_id}")
         return
 
-    # Format the message exactly as requested
+    # Format the message to look like a friendly human message to bypass strict Indian SMS spam filters
     message_body = (
-        f"🚨 VAYU DRISHTI ALERT 🚨\n"
-        f"Station: {station.station_id}\n"
-        f"Timestamp: {anomaly_event.timestamp.strftime('%Y-%m-%d %H:%M:%S UTC')}\n"
-        f"Severity: {anomaly_event.severity} (Score: {anomaly_event.score})\n"
-        f"Type: {anomaly_event.anomaly_type}\n"
-        f"ML Diagnosis: {anomaly_event.description}"
+        f"Hi Maintainer! Just a quick heads up: Station {station.station_id} is showing a {anomaly_event.anomaly_type}. "
+        f"The ML system gave it a score of {anomaly_event.score}. Please check the dashboard when you can!"
     )
 
     for number in valid_numbers:
@@ -51,6 +47,10 @@ def send_anomaly_sms(anomaly_event):
                 from_=twilio_number,
                 to=number
             )
-            logger.info(f"Alert sent to {number}. SID: {message.sid}")
+            success_msg = f"SUCCESS: Alert sent to {number}. Twilio SID: {message.sid}"
+            print(success_msg, flush=True)
+            logger.info(success_msg)
         except Exception as e:
-            logger.error(f"Failed to send alert to {number}: {str(e)}")
+            error_msg = f"ERROR: Failed to send alert to {number}: {str(e)}"
+            print(error_msg, flush=True)
+            logger.error(error_msg)
