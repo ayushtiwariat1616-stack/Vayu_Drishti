@@ -1,5 +1,8 @@
+import logging
 from twilio.rest import Client
 import os
+
+logger = logging.getLogger(__name__)
 
 def send_anomaly_sms(anomaly_event):
     """
@@ -11,7 +14,7 @@ def send_anomaly_sms(anomaly_event):
 
     # If Twilio isn't configured, skip sending
     if not account_sid or not auth_token or not twilio_number:
-        print("Twilio credentials not found. Skipping SMS alert.")
+        logger.warning("Twilio credentials not found. Skipping SMS alert.")
         return
 
     client = Client(account_sid, auth_token)
@@ -28,7 +31,7 @@ def send_anomaly_sms(anomaly_event):
     valid_numbers = [num for num in maintainers if num]
 
     if not valid_numbers:
-        print(f"No valid maintainer numbers found for station {station.station_id}")
+        logger.warning(f"No valid maintainer numbers found for station {station.station_id}")
         return
 
     # Format the message exactly as requested
@@ -48,6 +51,6 @@ def send_anomaly_sms(anomaly_event):
                 from_=twilio_number,
                 to=number
             )
-            print(f"Alert sent to {number}. SID: {message.sid}")
+            logger.info(f"Alert sent to {number}. SID: {message.sid}")
         except Exception as e:
-            print(f"Failed to send alert to {number}: {str(e)}")
+            logger.error(f"Failed to send alert to {number}: {str(e)}")
