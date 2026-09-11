@@ -1,25 +1,17 @@
 import logging
 import os
 import urllib.request
-import urllib.parse
 import json
-import base64
 
 logger = logging.getLogger(__name__)
 
 def send_anomaly_email(anomaly_event):
     """
-    Sends an email alert via Twilio REST API (bypasses Render SMTP blocks).
+    Sends an email alert by proxying through the Vercel frontend Serverless Function
+    to completely bypass Render's SMTP port 587 block.
     """
     station = anomaly_event.station
-    logger.info(f"--- STARTING TWILIO EMAIL ALERT PROCESS FOR STATION {station.station_id} ---")
-
-    account_sid = os.environ.get("TWILIO_ACCOUNT_SID")
-    auth_token = os.environ.get("TWILIO_AUTH_TOKEN")
-    
-    if not account_sid or not auth_token:
-        logger.warning("Twilio credentials not found. Skipping email alert.")
-        return
+    logger.info(f"--- STARTING VERCEL EMAIL ALERT PROCESS FOR STATION {station.station_id} ---")
 
     maintainers = [
         station.maintainer_1_email,
@@ -42,38 +34,33 @@ def send_anomaly_email(anomaly_event):
         f"Please check the command center dashboard immediately."
     )
 
-    twilio_url = f"https://api.twilio.com/2010-04-01/Accounts/{account_sid}/Messages.json"
-    twilio_email_sender = f"{account_sid}@twilio.email"
+    # Use the live Vercel frontend domain to hit the new proxy endpoint
+    # Vercel operates on HTTPS (Port 443), which Render does not block!
+    vercel_url = "https://vayu-drishti-chi.vercel.app/api/send-email"
     
-    # Create Basic Auth header
-    auth_str = f"{account_sid}:{auth_token}"
-    b64_auth_str = base64.b64encode(auth_str.encode("ascii")).decode("ascii")
+    payload = json.dumps({
+        "to": valid_emails,
+        "subject": f"Vayu Drishti Alert: {station.station_id}",
+        "text": message_body
+    }).encode('utf-8')
+
     headers = {
-        "Authorization": f"Basic {b64_auth_str}",
-        "Content-Type": "application/x-www-form-urlencoded"
+        "Content-Type": "application/json"
     }
 
-    for email in valid_emails:
-        try:
-            data = urllib.parse.urlencode({
-                "From": twilio_email_sender,
-                "To": email,
-                "Body": message_body,
-                "Subject": f"Vayu Drishti Alert: {station.station_id}"
-            }).encode("ascii")
-            
-            req = urllib.request.Request(twilio_url, data=data, headers=headers, method="POST")
-            with urllib.request.urlopen(req) as response:
-                res_data = json.loads(response.read().decode())
-                success_msg = f"SUCCESS: Twilio Email alert sent to {email}. SID: {res_data.get('sid')}"
-                print(success_msg, flush=True)
-                logger.info(success_msg)
-        except urllib.error.HTTPError as e:
-            error_body = e.read().decode()
-            error_msg = f"ERROR: Failed to send Twilio Email alert to {email}: HTTP {e.code} - {error_body}"
-            print(error_msg, flush=True)
-            logger.error(error_msg)
-        except Exception as e:
-            error_msg = f"ERROR: Failed to send Twilio Email alert to {email}: {str(e)}"
-            print(error_msg, flush=True)
-            logger.error(error_msg)
+    try:
+        req = urllib.request.Request(vercel_url, data=payload, headers=headers, method="POST")
+        with urllib.request.urlopen(req) as response:
+            res_data = json.loads(response.read().decode())
+            success_msg = f"SUCCESS: Vercel Proxy sent Email alert to {valid_emails}. Response: {res_data}"
+            print(success_msg, flush=True)
+            logger.info(success_msg)
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode()
+        error_msg = f"ERROR: Failed to send Vercel Email alert: HTTP {e.code} - {error_body}"
+        print(error_msg, flush=True)
+        logger.error(error_msg)
+    except Exception as e:
+        error_msg = f"ERROR: Failed to send Vercel Email alert: {str(e)}"
+        print(error_msg, flush=True)
+        logger.error(error_msg)
