@@ -41,16 +41,20 @@ def send_anomaly_sms(anomaly_event):
     )
 
     for number in valid_numbers:
+        # Strip any existing 'whatsapp:' prefix just in case the user added it to the DB
+        clean_number = number.replace("whatsapp:", "")
+        clean_twilio = twilio_number.replace("whatsapp:", "")
+        
         try:
             message = client.messages.create(
                 body=message_body,
-                from_=twilio_number,
-                to=number
+                from_=f"whatsapp:{clean_twilio}",
+                to=f"whatsapp:{clean_number}"
             )
-            success_msg = f"SUCCESS: Alert sent to {number}. Twilio SID: {message.sid}"
+            success_msg = f"SUCCESS: WhatsApp Alert sent to {clean_number}. Twilio SID: {message.sid}"
             print(success_msg, flush=True)
             logger.info(success_msg)
         except Exception as e:
-            error_msg = f"ERROR: Failed to send alert to {number}: {str(e)}"
+            error_msg = f"ERROR: Failed to send WhatsApp alert to {clean_number}: {str(e)}"
             print(error_msg, flush=True)
             logger.error(error_msg)
