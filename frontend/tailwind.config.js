@@ -67,6 +67,7 @@ export default {
         wide:   '0.06em',
       },
       boxShadow: {
+<<<<<<< HEAD
         glass:    '0 4px 24px -2px rgba(14, 165, 233, 0.08), 0 0 4px rgba(14, 165, 233, 0.04)',
         'glass-md': '0 8px 32px -4px rgba(14, 165, 233, 0.12), 0 0 8px rgba(14, 165, 233, 0.06)',
         'glass-lg': '0 16px 48px -8px rgba(14, 165, 233, 0.15), 0 0 16px rgba(14, 165, 233, 0.08)',
@@ -75,6 +76,16 @@ export default {
         'glow-red':   '0 0 15px 4px rgba(239,68,68,0.3)',
         'glow-teal':  '0 0 16px 4px rgba(20,184,166,0.2)',
         inner:    'inset 0 1px 3px 0 rgba(0,0,0,0.05)',
+=======
+        glass:    '0 4px 24px 0 rgba(0,0,0,0.4), 0 1px 4px 0 rgba(20,184,166,0.15)',
+        'glass-md': '0 8px 32px 0 rgba(0,0,0,0.5), 0 2px 8px 0 rgba(20,184,166,0.2)',
+        'glass-lg': '0 16px 48px 0 rgba(0,0,0,0.6), 0 4px 16px 0 rgba(20,184,166,0.25)',
+        glow:     '0 0 12px 2px rgba(34,197,94,0.4)',
+        'glow-amber': '0 0 12px 2px rgba(234,179,8,0.4)',
+        'glow-red':   '0 0 15px 4px rgba(239,68,68,0.5)',
+        'glow-teal':  '0 0 16px 4px rgba(20,184,166,0.4)',
+        inner:    'inset 0 1px 3px 0 rgba(0,0,0,0.5)',
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
       },
       backdropBlur: {
         xs: '2px',

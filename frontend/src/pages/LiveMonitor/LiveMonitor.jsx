@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import TelemetryChart from '../../components/charts/TelemetryChart';
 import LiveEventStream from '../../components/system/LiveEventStream';
+<<<<<<< HEAD
 import { Radio, BookOpen, MapPin, Bell } from 'lucide-react';
+=======
+import { Activity, Radio, Maximize2 } from 'lucide-react';
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
 import { formatRelative } from '../../utils/formatters';
 
 export default function LiveMonitor() {
@@ -29,6 +33,7 @@ export default function LiveMonitor() {
   const stationAnomalies = anomalies.filter(a => a.stationId === selectedStation);
 
   return (
+<<<<<<< HEAD
     <div className="space-y-4 max-w-[1400px] mx-auto pb-8">
       {/* Header */}
       <div className="animate-in-up flex flex-col xl:flex-row xl:items-start justify-between gap-4">
@@ -77,35 +82,87 @@ export default function LiveMonitor() {
           <div className="bg-white/90 backdrop-blur-md rounded-xl p-3 min-w-[120px] border border-[#e2e8f0] shadow-sm">
             <div className="text-[10px] font-bold tracking-widest text-[#64748b] uppercase mb-1">PRESSURE</div>
             <div className="text-xl font-bold tabular text-[#1e3a8a]">{cr.pressure?.toFixed(0) ?? '—'} hPa</div>
+=======
+    <div className="px-6 py-5 space-y-4">
+      {/* Header */}
+      <div className="animate-in-up flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-atmo-deep tracking-tight">Live Monitor</h1>
+          <p className="text-sm text-atmo-muted mt-0.5">Real-time sensor telemetry · {selected.id}</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="card-sm px-4 py-2">
+            <div className="label text-2xs mb-1">STATION</div>
+            <div className="flex items-center gap-1.5">
+              <span className={`status-dot ${selected.status === 'healthy' ? 'status-dot-live' : 'status-dot-warning'}`} />
+              <span className="font-semibold text-sm">{selected.id}</span>
+            </div>
+          </div>
+          <div className="card-sm px-4 py-2">
+            <div className="label text-2xs mb-1">STATUS</div>
+            <span className={`badge ${selected.status === 'healthy' ? 'badge-healthy' : 'badge-medium'}`}>
+              {selected.status.toUpperCase()}
+            </span>
+          </div>
+          <div className="card-sm px-4 py-2">
+            <div className="label text-2xs mb-1">TEMP</div>
+            <div className="mono font-bold text-atmo-deep">{cr.temperature?.toFixed(1) ?? '—'}°C</div>
+          </div>
+          <div className="card-sm px-4 py-2">
+            <div className="label text-2xs mb-1">HUMIDITY</div>
+            <div className="mono font-bold text-atmo-deep">{cr.humidity?.toFixed(0) ?? '—'}%</div>
+          </div>
+          <div className="card-sm px-4 py-2">
+            <div className="label text-2xs mb-1">PRESSURE</div>
+            <div className="mono font-bold text-atmo-deep">{cr.pressure?.toFixed(0) ?? '—'} hPa</div>
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
           </div>
         </div>
       </div>
 
       {/* Main chart + event stream */}
+<<<<<<< HEAD
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 animate-in-up stagger-1">
         <div className="xl:col-span-2">
+=======
+      <div className="grid grid-cols-4 gap-4 animate-in-up stagger-1">
+        <div className="col-span-3">
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
           <TelemetryChart
             data={data}
             anomalies={stationAnomalies}
             mode="live"
+<<<<<<< HEAD
             height={460}
+=======
+            height={400}
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
             title="LIVE TELEMETRY"
             showModeToggle={true}
             showTimeframePicker={true}
             allowMaximize={true}
           />
         </div>
+<<<<<<< HEAD
         
         <div className="xl:col-span-1 glass bg-white/70 p-5 rounded-xl flex flex-col h-full border border-white">
           <LiveEventStream
             events={events.filter(e => e.stationId === selectedStation || !e.stationId)}
             maxItems={15}
             className="flex-1"
+=======
+        <div className="col-span-1">
+          <LiveEventStream
+            events={events.filter(e => e.stationId === selectedStation || !e.stationId)}
+            maxItems={15}
+            className="h-full min-h-[460px]"
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
           />
         </div>
       </div>
 
       {/* Anomaly markers table */}
+<<<<<<< HEAD
       <div className="glass bg-white/70 py-5 rounded-xl border border-white animate-in-up stagger-2 overflow-hidden">
         <div className="flex items-center gap-2 mb-4 px-5">
           <Radio className="w-5 h-5 text-[#1e3a8a]" />
@@ -124,11 +181,29 @@ export default function LiveMonitor() {
                 <div className="flex-1" />
                 <span className="text-[11px] font-medium text-[#64748b]">{formatRelative(a.timestamp)}</span>
                 <span className="text-sm text-[#1e293b] font-bold ml-6 min-w-[100px] text-right">
+=======
+      {stationAnomalies.length > 0 && (
+        <div className="glass p-4 animate-in-up stagger-2">
+          <div className="label mb-3 flex items-center gap-1.5">
+            <Radio className="w-3.5 h-3.5 text-critical" /> ANOMALY EVENTS ON CHART
+          </div>
+          <div className="divide-y divide-atmo-border/40">
+            {stationAnomalies.slice(0, 5).map(a => (
+              <div key={a.id} className="flex items-center gap-4 py-2.5">
+                <span className={`badge ${
+                  a.severity === 'HIGH' ? 'badge-high' :
+                  a.severity === 'MEDIUM' ? 'badge-medium' : 'badge-watch'
+                }`}>{a.severity}</span>
+                <span className="text-sm font-medium">{a.type?.replace(/_/g, ' ')}</span>
+                <span className="mono text-2xs text-atmo-muted ml-auto">{formatRelative(a.timestamp)}</span>
+                <span className="mono text-xs text-atmo-deep font-semibold">
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
                   Score: {a.score?.toFixed(2)}
                 </span>
               </div>
             ))}
           </div>
+<<<<<<< HEAD
         ) : (
           <div className="text-center py-6 text-sm font-medium text-[#64748b]">No anomaly events on chart</div>
         )}
@@ -178,6 +253,20 @@ export default function LiveMonitor() {
             </div>
             <span className="text-[10px] font-medium text-[#64748b] ml-4.5">Hover for details</span>
           </div>
+=======
+        </div>
+      )}
+
+      {/* Overlay toggles info */}
+      <div className="glass p-4 animate-in-up stagger-3">
+        <div className="label mb-2">CHART GUIDE</div>
+        <div className="flex flex-wrap gap-4 text-xs text-atmo-muted">
+          <span>🖱 <strong>Drag</strong> on chart to zoom into a window</span>
+          <span>🔄 Click <strong>↺ reset</strong> to restore full view</span>
+          <span>🔴 <strong>Red markers</strong> indicate anomaly events — click to investigate</span>
+          <span>⛶ <strong>Maximize</strong> for fullscreen chart with brush navigator</span>
+          <span>📊 Use <strong>Multi</strong> mode to see all sensors simultaneously</span>
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
         </div>
       </div>
     </div>

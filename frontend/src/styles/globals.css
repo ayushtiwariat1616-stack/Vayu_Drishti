@@ -7,6 +7,7 @@
 /* ─── Base ─────────────────────────────────────────────── */
 @layer base {
   :root {
+<<<<<<< HEAD
     /* Light Mode (Mist-white/Icy-blue base) */
     --color-atmo-bg: 240 247 252;
     --color-atmo-surface: 255 255 255;
@@ -41,6 +42,8 @@
 
   .dark {
     /* Dark Mode (Deep Navy base) */
+=======
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
     --color-atmo-bg: 5 11 20;
     --color-atmo-surface: 10 20 35;
     --color-atmo-mid: 19 36 57;
@@ -114,14 +117,22 @@
     background: rgba(var(--glass-bg, 248, 250, 251), 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+<<<<<<< HEAD
     @apply border border-atmo-border/60 rounded-xl;
+=======
+    @apply border border-atmo-border/60 rounded-xl shadow-glass;
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
   }
 
   .glass-sm {
     background: rgba(var(--glass-bg, 248, 250, 251), 0.65);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+<<<<<<< HEAD
     @apply border border-atmo-border/50 rounded-lg;
+=======
+    @apply border border-atmo-border/50 rounded-lg shadow-glass;
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
   }
 
   .glass-dark {
@@ -131,12 +142,22 @@
     @apply border border-white/10 rounded-xl;
   }
 
+<<<<<<< HEAD
   .card {
     @apply bg-atmo-surface border border-atmo-border rounded-xl;
   }
 
   .card-sm {
     @apply bg-atmo-surface border border-atmo-border rounded-lg;
+=======
+  /* Solid cards for data-dense areas */
+  .card {
+    @apply bg-atmo-surface border border-atmo-border rounded-xl shadow-glass;
+  }
+
+  .card-sm {
+    @apply bg-atmo-surface border border-atmo-border rounded-lg shadow-glass;
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
   }
 
   /* Status dot */
@@ -229,7 +250,11 @@
   }
 
   .btn-primary {
+<<<<<<< HEAD
     @apply btn bg-teal text-white hover:bg-teal-dark;
+=======
+    @apply btn bg-teal text-white hover:bg-teal-dark shadow-glass;
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
   }
 
   .btn-secondary {
@@ -353,6 +378,7 @@
     background-size: 20px 20px;
   }
 
+<<<<<<< HEAD
   .bg-atmo-wave {
     background-color: #e0f2fe;
     background-image: url('/bg-light.png');
@@ -367,6 +393,8 @@
     background-image: url('/bg-dark.png');
   }
 
+=======
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
   .animate-in-up {
     @apply opacity-0 animate-fade-up;
     animation-fill-mode: forwards;

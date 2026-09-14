@@ -126,7 +126,11 @@ export default function TelemetryChart({
     temperature: true,
     pressure:    true,
     humidity:    true,
+<<<<<<< HEAD
     anomalyScore: false,
+=======
+    anomalyScore: true,
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
   });
 
   // Zoom/pan state
@@ -238,6 +242,16 @@ export default function TelemetryChart({
     return [parseFloat((min - pad).toFixed(1)), parseFloat((max + pad).toFixed(1))];
   }, [displayData, chartMode, activeSensor]);
 
+<<<<<<< HEAD
+=======
+  const chartData = useMemo(() => {
+    return displayData.map(d => ({
+      ...d,
+      anomalyScore: anomalyMap[d.timestamp]?.score || 0
+    }));
+  }, [displayData, anomalyMap]);
+
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
   const toggleOverlay = (key) => setOverlays(o => ({ ...o, [key]: !o[key] }));
   const toggleMvSeries = (key) => setMvSeries(s => ({ ...s, [key]: !s[key] }));
 
@@ -246,7 +260,11 @@ export default function TelemetryChart({
     <div className={`relative ${isMaximized ? 'h-full' : ''}`} style={!isMaximized ? { height: h } : {}}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
+<<<<<<< HEAD
           data={displayData}
+=======
+          data={chartData}
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
           margin={{ top: 16, right: 24, left: 0, bottom: 4 }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
@@ -294,6 +312,10 @@ export default function TelemetryChart({
               <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 9, fill: 'rgb(var(--color-atmo-muted))' }} axisLine={false} tickLine={false} width={40} />
             </>
           )}
+<<<<<<< HEAD
+=======
+          <YAxis yAxisId="score" domain={[0, 1]} hide={true} />
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
 
           <Tooltip
             content={<ChartTooltip anomalyMap={anomalyMap} />}
@@ -341,7 +363,11 @@ export default function TelemetryChart({
                   animationDuration={400} strokeDasharray="3 2" name="Humidity" />
               )}
               {mvSeries.anomalyScore && (
+<<<<<<< HEAD
                 <Line yAxisId="right" type="monotone" dataKey="anomalyScore" stroke="rgb(var(--color-amber))" strokeWidth={1}
+=======
+                <Line yAxisId="score" type="monotone" dataKey="anomalyScore" stroke="rgb(var(--color-amber))" strokeWidth={1}
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
                   dot={false} animationDuration={400} name="Anomaly Score" />
               )}
             </>
@@ -359,7 +385,11 @@ export default function TelemetryChart({
                 isAnimationActive
               />
               {overlays.anomalyScore && (
+<<<<<<< HEAD
                 <Line type="monotone" dataKey="anomalyScore"
+=======
+                <Line yAxisId="score" type="monotone" dataKey="anomalyScore"
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
                   stroke="rgb(var(--color-amber))" strokeWidth={1.2} dot={false}
                   strokeDasharray="4 3" animationDuration={300} />
               )}
@@ -505,7 +535,11 @@ export default function TelemetryChart({
           <div className="flex-1 select-none" style={{ cursor: 'crosshair' }}>
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart
+<<<<<<< HEAD
                 data={displayData}
+=======
+                data={chartData}
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
                 margin={{ top: 16, right: 32, left: 8, bottom: 8 }}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
@@ -531,6 +565,10 @@ export default function TelemetryChart({
                     <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: 'rgb(var(--color-atmo-muted))' }} axisLine={false} tickLine={false} width={45} />
                   </>
                 )}
+<<<<<<< HEAD
+=======
+                <YAxis yAxisId="score" domain={[0, 1]} hide={true} />
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
                 <Tooltip content={<ChartTooltip anomalyMap={anomalyMap} />}
                   cursor={{ stroke: 'rgba(var(--color-teal), 0.3)', strokeWidth: 1.5, strokeDasharray: '4 4' }} />
                 {Object.entries(anomalyMap).map(([ts, anomaly]) => (
@@ -549,7 +587,11 @@ export default function TelemetryChart({
                     {mvSeries.temperature && <Area yAxisId="left" type="monotone" dataKey="temperature" stroke="rgb(var(--color-teal))" strokeWidth={2.5} fill="url(#areaGrad-temp-max)" dot={false} activeDot={{ r: 5 }} animationDuration={400} />}
                     {mvSeries.pressure    && <Line yAxisId="right" type="monotone" dataKey="pressure"    stroke="rgb(var(--color-sky))" strokeWidth={2}   dot={false} strokeDasharray="6 3" animationDuration={400} />}
                     {mvSeries.humidity    && <Line yAxisId="left"  type="monotone" dataKey="humidity"    stroke="rgb(var(--color-mint))" strokeWidth={2}   dot={false} strokeDasharray="3 2" animationDuration={400} />}
+<<<<<<< HEAD
                     {mvSeries.anomalyScore && <Line yAxisId="right" type="monotone" dataKey="anomalyScore" stroke="rgb(var(--color-amber))" strokeWidth={1.5} dot={false} animationDuration={400} />}
+=======
+                    {mvSeries.anomalyScore && <Line yAxisId="score" type="monotone" dataKey="anomalyScore" stroke="rgb(var(--color-amber))" strokeWidth={1.5} dot={false} animationDuration={400} />}
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
                   </>
                 ) : (
                   <Area type="monotone" dataKey={activeSensor}

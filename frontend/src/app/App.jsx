@@ -1,8 +1,13 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AppProvider } from '../context/AppContext';
+<<<<<<< HEAD
 import Header  from '../components/layout/Header';
 import OpeningAnimation from '../components/layout/OpeningAnimation';
 import SystemStatusDrawer from '../components/system/SystemStatusDrawer';
+=======
+import Sidebar from '../components/layout/Sidebar';
+import Header  from '../components/layout/Header';
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
 import CommandCenter from '../pages/CommandCenter/CommandCenter';
 import LiveMonitor from '../pages/LiveMonitor/LiveMonitor';
 import Anomalies from '../pages/Anomalies/Anomalies';
@@ -56,6 +61,7 @@ function AnimatedRoutes() {
 
 function AppShell() {
   return (
+<<<<<<< HEAD
     <div className="flex flex-col min-h-screen bg-atmo-wave relative">
       <OpeningAnimation />
       <Header />
@@ -63,6 +69,16 @@ function AppShell() {
         <AnimatedRoutes />
       </main>
       <SystemStatusDrawer />
+=======
+    <div className="flex min-h-screen bg-atmo-bg bg-dot-grid">
+      <Sidebar />
+      <div className="flex-1 flex flex-col ml-56">
+        <Header />
+        <main className="flex-1 pt-12 overflow-y-auto">
+          <AnimatedRoutes />
+        </main>
+      </div>
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
     </div>
   );
 }

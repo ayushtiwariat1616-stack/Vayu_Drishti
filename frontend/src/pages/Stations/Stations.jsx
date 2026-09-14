@@ -1,17 +1,30 @@
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+<<<<<<< HEAD
 import { Radio, HeartPulse, Clock, ArrowRight, AlertTriangle, Search, RefreshCw, Database, Wifi, Cpu, MapPin } from 'lucide-react';
 import { formatRelative } from '../../utils/formatters';
 import StationMap from '../../components/ui/StationMap';
+=======
+import { Radio, HeartPulse, Clock, ArrowRight, AlertTriangle } from 'lucide-react';
+import { formatRelative } from '../../utils/formatters';
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
 
 function HealthBar({ value }) {
   const color = value >= 85 ? 'rgb(var(--color-mint))' : value >= 65 ? 'rgb(var(--color-amber))' : 'rgb(var(--color-critical))';
   return (
+<<<<<<< HEAD
     <div className="flex items-center gap-3">
       <div className="flex-1 h-2 bg-atmo-mid/60 rounded-full overflow-hidden border border-atmo-border/40">
         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${value}%`, background: color }} />
       </div>
       <span className="mono text-sm font-bold w-9 text-right" style={{ color }}>{value}%</span>
+=======
+    <div className="flex items-center gap-2">
+      <div className="flex-1 h-1.5 bg-atmo-mid rounded-full overflow-hidden">
+        <div className="h-full rounded-full transition-all duration-700" style={{ width: `${value}%`, background: color }} />
+      </div>
+      <span className="mono text-xs font-semibold w-8 text-right" style={{ color }}>{value}%</span>
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
     </div>
   );
 }
@@ -20,6 +33,7 @@ function StationCard({ station, readings, anomalies }) {
   const navigate = useNavigate();
   const r = readings[station.station_id] || {};
   const stationAnomalies = anomalies.filter(a => a.stationId === station.station_id && a.status === 'active');
+<<<<<<< HEAD
   const isHealthy = station.status === 'healthy';
   const isMonitoring = station.status === 'monitoring';
 
@@ -42,18 +56,50 @@ function StationCard({ station, readings, anomalies }) {
         }`}>
           <span className={`w-2 h-2 rounded-full ${isHealthy ? 'bg-mint animate-breathe' : isMonitoring ? 'bg-amber animate-pulse-slow' : 'bg-critical animate-pulse-slow'}`} />
           {station.status === 'healthy' ? 'Nominal' : station.status.toUpperCase()}
+=======
+
+  return (
+    <div className={`glass p-5 flex flex-col gap-4 transition-all duration-300 hover:shadow-glass-lg animate-in-up
+      ${station.status === 'healthy' ? 'hover:shadow-glow' :
+        station.status === 'monitoring' ? 'hover:shadow-glow-amber' : ''}`}>
+      {/* Station header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className={`status-dot ${
+              station.status === 'healthy' ? 'status-dot-live' :
+              station.status === 'monitoring' ? 'status-dot-warning' : 'status-dot-muted'
+            }`} />
+            <span className="text-lg font-bold text-atmo-deep">{station.station_id}</span>
+          </div>
+          <div className="text-xs text-atmo-muted">{station.location.name}</div>
+          <div className="text-2xs text-atmo-muted/60 mt-0.5">{station.device}</div>
+        </div>
+        <span className={`badge ${
+          station.status === 'healthy' ? 'badge-healthy' :
+          station.status === 'monitoring' ? 'badge-medium' : 'badge-watch'
+        }`}>
+          {station.status.toUpperCase()}
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
         </span>
       </div>
 
       {/* Health */}
+<<<<<<< HEAD
       <div className="mt-2">
         <div className="text-2xs font-bold tracking-widest text-atmo-muted uppercase mb-2 flex items-center gap-1.5">
           <HeartPulse className="w-3.5 h-3.5" /> HEALTH
+=======
+      <div>
+        <div className="label mb-1.5 flex items-center gap-1">
+          <HeartPulse className="w-3 h-3" /> HEALTH
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
         </div>
         <HealthBar value={station.health} />
       </div>
 
       {/* Sensor readings */}
+<<<<<<< HEAD
       <div className="grid grid-cols-3 gap-2 mt-2">
         {[
           { l: 'TEMP',  v: r.temperature?.toFixed(1), u: '°C' },
@@ -63,31 +109,58 @@ function StationCard({ station, readings, anomalies }) {
           <div key={l} className="text-center bg-white/40 dark:bg-atmo-mid/40 rounded-lg px-2 py-3 border border-atmo-border/30">
             <div className="text-2xs font-bold tracking-widest text-atmo-muted uppercase mb-1">{l}</div>
             <div className="text-base font-bold text-atmo-deep">{v ?? '—'}<span className="text-xs font-normal ml-0.5 text-atmo-muted">{u}</span></div>
+=======
+      <div className="grid grid-cols-3 gap-2">
+        {[
+          { l: 'TEMP',  v: r.temperature?.toFixed(1), u: '°C' },
+          { l: 'PRESS', v: r.pressure?.toFixed(0),    u: 'hPa' },
+          { l: 'HUMID', v: r.humidity?.toFixed(0),    u: '%' },
+        ].map(({ l, v, u }) => (
+          <div key={l} className="text-center bg-atmo-mid/40 rounded-lg px-2 py-2">
+            <div className="text-2xs text-atmo-muted mb-0.5">{l}</div>
+            <div className="mono text-sm font-bold text-atmo-deep">{v ?? '—'}<span className="text-2xs font-normal ml-0.5 text-atmo-muted">{u}</span></div>
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
           </div>
         ))}
       </div>
 
       {/* Last seen */}
+<<<<<<< HEAD
       <div className="flex items-center gap-2 text-sm text-atmo-muted mt-2">
         <Clock className="w-4 h-4" />
         Last seen: <span className="text-atmo-deep font-semibold">{formatRelative(station.lastSeen)}</span>
+=======
+      <div className="flex items-center gap-1.5 text-xs text-atmo-muted">
+        <Clock className="w-3 h-3" />
+        Last seen: <span className="text-atmo-deep font-medium">{formatRelative(station.lastSeen)}</span>
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
       </div>
 
       {/* Active alerts */}
       {stationAnomalies.length > 0 && (
+<<<<<<< HEAD
         <div className="flex items-center justify-between px-3 py-2 bg-critical/5 border border-critical/20 rounded-lg group hover:bg-critical/10 transition-colors cursor-pointer" onClick={() => navigate(`/stations/${station.station_id}`)}>
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-critical" />
             <span className="text-sm text-critical font-bold">{stationAnomalies.length} active alert{stationAnomalies.length > 1 ? 's' : ''}</span>
           </div>
           <ChevronRight className="w-4 h-4 text-critical/60 group-hover:text-critical transition-colors" />
+=======
+        <div className="flex items-center gap-2 px-2 py-1.5 bg-critical/5 border border-critical/10 rounded-lg">
+          <AlertTriangle className="w-3 h-3 text-critical flex-shrink-0" />
+          <span className="text-xs text-critical font-medium">{stationAnomalies.length} active alert{stationAnomalies.length > 1 ? 's' : ''}</span>
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
         </div>
       )}
 
       {/* Open button */}
       <button
         onClick={() => navigate(`/stations/${station.station_id}`)}
+<<<<<<< HEAD
         className="w-full btn-primary flex items-center justify-center gap-2 mt-auto py-2.5 font-bold tracking-wide"
+=======
+        className="w-full btn-primary flex items-center justify-center gap-2 mt-auto"
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
       >
         OPEN STATION
         <ArrowRight className="w-4 h-4" />
@@ -96,6 +169,7 @@ function StationCard({ station, readings, anomalies }) {
   );
 }
 
+<<<<<<< HEAD
 // Need ChevronRight for the alert box
 import { ChevronRight } from 'lucide-react';
 
@@ -150,11 +224,41 @@ export default function Stations() {
             <RefreshCw className="w-4 h-4" />
             Refresh
           </button>
+=======
+export default function Stations() {
+  const { state } = useApp();
+  const { stations, currentReadings, anomalies, anomalyStats } = state;
+
+  const activeCount   = stations.filter(s => s.status === 'healthy').length;
+  const degradedCount = stations.filter(s => s.status !== 'healthy').length;
+
+  return (
+    <div className="px-6 py-5 space-y-5">
+      {/* Header */}
+      <div className="animate-in-up flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-atmo-deep tracking-tight">Stations</h1>
+          <p className="text-sm text-atmo-muted mt-0.5">
+            {stations.length} stations monitored · {activeCount} healthy · {degradedCount} monitoring
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="card-sm px-4 py-2 text-center">
+            <div className="label text-2xs mb-0.5">NETWORK HEALTH</div>
+            <div className="text-2xl font-bold text-teal tabular">
+              {Math.round(stations.reduce((s, st) => s + st.health, 0) / stations.length)}%
+            </div>
+          </div>
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
         </div>
       </div>
 
       {/* Station cards grid */}
+<<<<<<< HEAD
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+=======
+      <div className="grid grid-cols-3 gap-5">
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
         {stations.map((s, i) => (
           <div key={s.id} className={`stagger-${i + 1}`}>
             <StationCard
@@ -165,6 +269,7 @@ export default function Stations() {
           </div>
         ))}
       </div>
+<<<<<<< HEAD
 
       {/* Station Network Overview */}
       <div className="glass overflow-hidden animate-in-up stagger-3 flex flex-col lg:flex-row">
@@ -242,6 +347,8 @@ export default function Stations() {
           </div>
         </div>
       </div>
+=======
+>>>>>>> 152f2e72e5a34af9c9255e82f9768deb03daee22
     </div>
   );
 }
